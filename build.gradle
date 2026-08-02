@@ -5,6 +5,15 @@ plugins {
     id 'idea'
 }
 
+// Dev Container / Windows bind mounts cannot set POSIX file modes (chmod 777).
+// Move the build output to a native Linux filesystem when running inside Linux.
+def osName = System.getProperty("os.name", "").toLowerCase()
+if (osName.contains("linux")) {
+    def nativeBuildDir = new File("/tmp/neoforge-pvpbot-build")
+    nativeBuildDir.mkdirs()
+    layout.buildDirectory.set(nativeBuildDir)
+}
+
 tasks.named('wrapper', Wrapper).configure {
     // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
     // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
@@ -151,7 +160,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"
-    into "build/generated/sources/modMetadata"
+    into layout.buildDirectory.dir("generated/sources/modMetadata")
 }
 // Include the output of "generateModMetadata" as an input directory for the build
 // this works with both building through Gradle and the IDE.

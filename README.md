@@ -53,6 +53,12 @@ VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer
 Gradleキャッシュは named volume（`neoforge-gradle-cache`）で永続化されるため、コンテナ再作成後も再ビルドが高速化されます。
 X11/Wayland/PulseAudio 経由で Windows 上の Windows Minecraft に表示可能です。
 
+### トラブルシューティング
+
+- **`generateModMetadata` で `Could not set file mode 777` エラーになる**  
+  Dev Container 内の `/workspaces` は Windows ホスト側のファイルシステムにマウントされており、Gradle が `chmod` を適用できないことが原因です。  
+  `build.gradle` では Linux 環境下で `layout.buildDirectory` を `/tmp/neoforge-pvpbot-build` に移動するよう設定済みです。コンテナ内ではこのディレクトリにビルド出力が作成されるため、権限エラーは回避されます。
+
 ## ドキュメント
 
 - CLAUDE.md — コードベースの構造と主要設計

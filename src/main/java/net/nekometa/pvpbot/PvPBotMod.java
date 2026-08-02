@@ -14,6 +14,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -85,10 +86,10 @@ public class PvPBotMod {
         if (modContainer == null) {
             return;
         }
-        for (ModConfig config : modContainer.getConfigs()) {
+        for (ModConfig config : ModConfigs.getModConfigs(modContainer.getModId())) {
             if (config.getType() == ModConfig.Type.COMMON
                     && config.getSpec() == Config.SPEC) {
-                config.save();
+                config.getLoadedConfig().save();
                 break;
             }
         }
