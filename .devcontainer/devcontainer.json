@@ -1,0 +1,46 @@
+{
+  "name": "neoforge-26.1.2-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": ["--gpus", "all"],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-gradle",
+        "redhat.java",
+        "vscjava.vscode-java-debug"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "java.import.gradle.wrapper.enabled": true
+      }
+    }
+  },
+  "forwardPorts": [25565],
+  "postCreateCommand": "sudo chown -R $(id -u):$(id -g) /home/vscode/.gradle 2>/dev/null; chmod +x gradlew && ./gradlew --version",
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "XDG_RUNTIME_DIR": "/mnt/wslg/runtime-dir",
+    "PULSE_SERVER": "/mnt/wslg/PulseServer"
+  },
+  "mounts": [
+    "source=neoforge-gradle-cache,target=/home/vscode/.gradle,type=volume",
+    {
+      "source": "\\\\wsl.localhost\\Ubuntu\\tmp\\.X11-unix",
+      "target": "/tmp/.X11-unix",
+      "type": "bind"
+    },
+    {
+      "source": "\\\\wsl.localhost\\Ubuntu\\mnt\\wslg",
+      "target": "/mnt/wslg",
+      "type": "bind"
+    }
+  ]
+}

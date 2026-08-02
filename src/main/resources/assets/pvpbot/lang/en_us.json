@@ -1,0 +1,42 @@
+{
+  "itemGroup.pvpbot": "PvP Practice Bot",
+  "item.pvpbot.pvpbot_menu": "PvP Bot Settings",
+
+  "pvpbot.screen.title": "PvP Bot Settings",
+  "pvpbot.screen.armor": "Armor: %s",
+  "pvpbot.screen.armor.leather": "Leather",
+  "pvpbot.screen.armor.iron": "Iron",
+  "pvpbot.screen.armor.diamond": "Diamond",
+  "pvpbot.screen.armor.netherite": "Netherite",
+  "pvpbot.screen.boxing": "Win Condition: %s",
+  "pvpbot.screen.boxing.off": "Off (death)",
+  "pvpbot.screen.boxing.50": "50 hits",
+  "pvpbot.screen.boxing.100": "100 hits",
+  "pvpbot.screen.boxing.500": "500 hits",
+  "pvpbot.screen.boxing.1000": "1000 hits",
+  "pvpbot.screen.beast": "Beast Mode: %s",
+  "pvpbot.screen.on": "ON",
+  "pvpbot.screen.off": "OFF",
+  "pvpbot.screen.start": "Start Fight",
+  "pvpbot.screen.close": "Close",
+  "pvpbot.screen.status": "Show current settings",
+  "pvpbot.screen.summary": "Saved: Armor=%s / Win=%s / Beast=%s",
+
+  "pvpbot.item.ragequit": "Ragequit",
+  "pvpbot.bot.name": "Practice Bot",
+
+  "pvpbot.msg.hint_start": "HINT: click the last inventory item to quit / moved to high arena",
+  "pvpbot.msg.hud": "Your hits: %s  Bot hits: %s  Combo: %s  Bot HP: %s",
+  "pvpbot.msg.title.quit": "Rage quitted!",
+  "pvpbot.msg.title.win": "Victory!",
+  "pvpbot.msg.title.lose": "Loss!",
+  "pvpbot.msg.title.lose_void": "Fell into the void…",
+
+  "pvpbot.cmd.beast": "beastMode=%s",
+  "pvpbot.cmd.armor": "armorTier=%s",
+  "pvpbot.cmd.boxing": "boxingMode=%s",
+  "pvpbot.cmd.strength": "strengthTier=%s",
+  "pvpbot.cmd.hitsdebug": "hitThresholdOverride=%s",
+  "pvpbot.cmd.menu_given": "Gave PvP Bot settings item",
+  "pvpbot.cmd.status": "[PvP Bot] Armor=%s / Win=%s / Beast=%s / Strength=%s / State=%s"
+}

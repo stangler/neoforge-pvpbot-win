@@ -1,0 +1,42 @@
+{
+  "itemGroup.pvpbot": "PvP Practice Bot",
+  "item.pvpbot.pvpbot_menu": "PvP Bot 設定",
+
+  "pvpbot.screen.title": "PvP Bot 設定",
+  "pvpbot.screen.armor": "防具: %s",
+  "pvpbot.screen.armor.leather": "革",
+  "pvpbot.screen.armor.iron": "鉄",
+  "pvpbot.screen.armor.diamond": "ダイヤ",
+  "pvpbot.screen.armor.netherite": "ネザライト",
+  "pvpbot.screen.boxing": "勝敗方式: %s",
+  "pvpbot.screen.boxing.off": "無効（死亡で決着）",
+  "pvpbot.screen.boxing.50": "50ヒット",
+  "pvpbot.screen.boxing.100": "100ヒット",
+  "pvpbot.screen.boxing.500": "500ヒット",
+  "pvpbot.screen.boxing.1000": "1000ヒット",
+  "pvpbot.screen.beast": "Beastモード: %s",
+  "pvpbot.screen.on": "ON",
+  "pvpbot.screen.off": "OFF",
+  "pvpbot.screen.start": "戦闘開始",
+  "pvpbot.screen.close": "閉じる",
+  "pvpbot.screen.status": "現在の設定を確認",
+  "pvpbot.screen.summary": "記憶中: 防具=%s / 勝敗=%s / Beast=%s",
+
+  "pvpbot.item.ragequit": "退出（Ragequit）",
+  "pvpbot.bot.name": "練習用ボット",
+
+  "pvpbot.msg.hint_start": "HINT: インベントリ最後のアイテムをクリックで退出 / 高所アリーナへ移動しました",
+  "pvpbot.msg.hud": "自分ヒット: %s  敵ヒット: %s  コンボ: %s  ボットHP: %s",
+  "pvpbot.msg.title.quit": "リタイア！",
+  "pvpbot.msg.title.win": "勝利！",
+  "pvpbot.msg.title.lose": "敗北…",
+  "pvpbot.msg.title.lose_void": "奈落へ落下…",
+
+  "pvpbot.cmd.beast": "Beastモード: %s",
+  "pvpbot.cmd.armor": "防具ティア: %s",
+  "pvpbot.cmd.boxing": "勝敗方式: %s",
+  "pvpbot.cmd.strength": "敵の強さ: %s",
+  "pvpbot.cmd.hitsdebug": "ヒット決着数（検証用）: %s",
+  "pvpbot.cmd.menu_given": "設定メニューアイテムを付与しました",
+  "pvpbot.cmd.status": "【PvP Bot】防具=%s / 勝敗=%s / Beast=%s / 強さ=%s / 状態=%s"
+}
