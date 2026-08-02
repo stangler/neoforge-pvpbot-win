@@ -92,6 +92,11 @@ public class Config {
             .comment("Bot sidestep distance per tick during strafing. Higher = more agile-looking movement")
             .defineInRange("aiStrafeSpeed", 0.2D, 0.05D, 0.6D);
 
+    /** プレイヤーとの距離を詰める前進速度（1tickあたり）。 */
+    public static final ModConfigSpec.DoubleValue AI_CHASE_SPEED = BUILDER
+            .comment("Forward chase distance per tick when the bot is outside melee range. Higher = bot closes distance faster")
+            .defineInRange("aiChaseSpeed", 0.18D, 0.0D, 0.6D);
+
     /** 毎tickの確率でストレーフの周期タイマーをランダムな値へ飛ばし、方向転換を不規則にする。 */
     public static final ModConfigSpec.DoubleValue AI_ERRATIC_CHANCE = BUILDER
             .comment("Per-tick chance to randomly jump the strafe cycle timer, making direction changes irregular instead of a clean left-right pattern")

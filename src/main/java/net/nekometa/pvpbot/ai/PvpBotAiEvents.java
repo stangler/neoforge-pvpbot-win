@@ -70,6 +70,9 @@ public final class PvpBotAiEvents {
             return;
         }
 
+        // 基本はプレイヤーを追跡。各種戦術動作は追跡の上で追加される。
+        tickChase(bot, nearestPlayer, state);
+
         if (state.strafesEnabled) {
             tickStrafe(bot, nearestPlayer, state);
             tickRandomDodge(bot, nearestPlayer, state);
@@ -83,6 +86,44 @@ public final class PvpBotAiEvents {
         if (state.critEnabled) {
             tickCritJumpTrigger(bot, nearestPlayer, state, level);
         }
+    }
+
+    /** プレイヤーの方を向く。攻撃間合い内ではさらに小さく左右にステップ。 */
+    private static void tickChase(LivingEntity bot, Player player, BotAiState state) {
+        double distSqr = bot.distanceToSqr(player);
+        if (distSqr <= MELEE_RANGE_SQR) {
+            // 間合い内：プレイヤーを向きながら小さく左右ステップ（照準を外させる）
+            facePlayer(bot, player);
+            if (bot.onGround() && state.hitCount < 1
+                    && bot.getRandom().nextDouble() < net.nekometa.pvpbot.Config.AI_RANDOM_DODGE_CHANCE.get()) {
+                double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get() * 0.6D;
+                double direction = bot.getRandom().nextBoolean() ? strafeSpeed : -strafeSpeed;
+                sideStepTowards(bot, player, direction);
+            }
+            return;
+        }
+
+        // 間合い外：プレイヤー方向へ滑らかに前進して距離を詰める
+        facePlayer(bot, player);
+        if (!bot.onGround()) {
+            return; // 空中では前進は重力・ノックバックに任せる
+        }
+        Vec3 forward = forwardVector(bot.getYRot());
+        double chaseSpeed = net.nekometa.pvpbot.Config.AI_CHASE_SPEED.get();
+        double destX = bot.getX() + forward.x * chaseSpeed;
+        double destZ = bot.getZ() + forward.z * chaseSpeed;
+        if (isSafeSideStepTarget(bot.level(), destX, bot.getY(), destZ)) {
+            Vec3 motion = bot.getDeltaMovement();
+            bot.setDeltaMovement(forward.x * chaseSpeed, motion.y, forward.z * chaseSpeed);
+        }
+    }
+
+    private static void facePlayer(LivingEntity bot, Player player) {
+        double dx = player.getX() - bot.getX();
+        double dz = player.getZ() - bot.getZ();
+        float yaw = (float) (Mth.atan2(dz, dx) * (180.0D / Math.PI)) - 90.0F;
+        bot.setYRot(yaw);
+        bot.setYHeadRot(yaw);
     }
 
     /**
@@ -157,10 +198,14 @@ public final class PvpBotAiEvents {
      */
     private static void tickWtap(LivingEntity bot, Player player, BotAiState state) {
         boolean playerAirborne = !player.onGround();
+        double dist = bot.distanceTo(player);
 
         if (playerAirborne) {
-            bot.setDeltaMovement(Vec3.ZERO);
-            if (bot.distanceTo(player) <= 4.0D) {
+            // プレイヤーが空中の時：WTAP。近接間合い内だけ一瞬止まり、
+            // それ以外では前進して距離を詰め続ける。
+            if (dist <= 2.5D) {
+                bot.setDeltaMovement(Vec3.ZERO);
+            } else if (dist <= 4.0D) {
                 Vec3 forward = forwardVector(bot.getYRot());
                 double destX = bot.getX() + forward.x * 0.17D;
                 double destY = bot.getY();
