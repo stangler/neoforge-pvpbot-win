@@ -45,6 +45,28 @@ public final class FightController {
     }
 
     /**
+     * プレイヤー周辺・アリーナ周辺の「bot」タグ付きゾンビを全て除去する。
+     * 前回セッションのボットが残っていると2体化するため、start/quit/endingの各所で呼ぶ。
+     */
+    private static void removeBotEntities(ServerLevel level, FightSession session) {
+        if (session.botUuid != null) {
+            net.minecraft.world.entity.Entity leftover = level.getEntity(session.botUuid);
+            if (leftover != null) {
+                leftover.discard();
+            }
+            session.botUuid = null;
+        }
+        if (session.arenaCenterX != 0.0D || session.arenaCenterZ != 0.0D) {
+            net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(
+                    session.arenaCenterX - 64.0D, session.arenaFloorY - 32.0D, session.arenaCenterZ - 64.0D,
+                    session.arenaCenterX + 64.0D, session.arenaFloorY + 32.0D, session.arenaCenterZ + 64.0D);
+            level.getEntitiesOfClass(net.minecraft.world.entity.monster.zombie.Zombie.class, box,
+                            e -> e.entityTags().contains("bot"))
+                    .forEach(net.minecraft.world.entity.Entity::discard);
+        }
+    }
+
+    /**
      * 高所に石床＋光源＋周囲のガラス壁を構築する。
      * 床は全面シーランタン（夜間スポーン防止）、外周ガラス壁＋天井で完全密閉しモブの侵入を防ぐ。
      */
@@ -189,12 +211,7 @@ public final class FightController {
         }
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
         // 保険: 何らかの理由で前回セッションのボットが残っていたら先に消す(2体化防止)
-        if (session.botUuid != null) {
-            net.minecraft.world.entity.Entity leftover = level.getEntity(session.botUuid);
-            if (leftover != null) {
-                leftover.discard();
-            }
-        }
+        removeBotEntities(level, session);
         session.state = FightState.SPAWNING;
         session.finalTimer = 0;
         session.comboCount = 0;
@@ -250,6 +267,7 @@ public final class FightController {
         session.state = FightState.QUIT;
         if (player.level() instanceof ServerLevel level) {
             level.playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.MASTER, 2.0F, 1.0F);
+            removeBotEntities(level, session);
         }
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
     }
@@ -460,13 +478,9 @@ public final class FightController {
         }
 
         if (session.finalTimer >= 45) {
-            // code:end/timer
+            // code:end/timer — botタグ付きボットを全て除去
             if (player.level() instanceof ServerLevel level) {
-                level.getEntitiesOfClass(net.minecraft.world.entity.monster.zombie.Zombie.class,
-                                player.getBoundingBox().inflate(128.0D))
-                        .stream()
-                        .filter(e -> e.entityTags().contains("bot"))
-                        .forEach(e -> e.kill(level));
+                removeBotEntities(level, session);
             }
             player.getInventory().clearContent();
             player.removeAllEffects();
