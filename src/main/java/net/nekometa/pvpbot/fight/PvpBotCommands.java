@@ -6,6 +6,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.nekometa.pvpbot.Config;
+import net.nekometa.pvpbot.PvPBotMod;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -52,6 +53,7 @@ public final class PvpBotCommands {
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
         session.beastMode = on;
         Config.BEAST_MODE.set(on);
+        PvPBotMod.saveConfig();
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.beast", on));
         return 1;
     }
@@ -63,6 +65,7 @@ public final class PvpBotCommands {
         session.enemyArmorTier = tier;
         session.playerArmorTier = tier;
         Config.ARMOR_TIER.set(tier);
+        PvPBotMod.saveConfig();
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.armor", tier));
         return 1;
     }
@@ -74,6 +77,7 @@ public final class PvpBotCommands {
         session.boxingMode = mode;
         session.hitThresholdOverride = 0;
         Config.BOXING_MODE.set(mode);
+        PvPBotMod.saveConfig();
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.boxing", mode));
         return 1;
     }
@@ -84,6 +88,7 @@ public final class PvpBotCommands {
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
         session.enemyStrengthTier = tier;
         Config.STRENGTH_TIER.set(tier);
+        PvPBotMod.saveConfig();
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.strength", tier));
         return 1;
     }

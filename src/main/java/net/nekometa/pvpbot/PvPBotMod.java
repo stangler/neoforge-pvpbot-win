@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -31,6 +30,8 @@ import net.nekometa.pvpbot.fight.FightAttachments;
 public class PvPBotMod {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "pvpbot";
+    // Holds the ModContainer reference for config persistence at runtime
+    private static ModContainer modContainer;
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Items which will all be registered under the "pvpbot" namespace
@@ -73,7 +74,24 @@ public class PvPBotMod {
         FightAttachments.register(modEventBus);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        PvPBotMod.modContainer = modContainer;
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    // --- Config persistence ---
+
+    /** Save the COMMON config to disk. */
+    public static void saveConfig() {
+        if (modContainer == null) {
+            return;
+        }
+        for (ModConfig config : modContainer.getConfigs()) {
+            if (config.getType() == ModConfig.Type.COMMON
+                    && config.getSpec() == Config.SPEC) {
+                config.save();
+                break;
+            }
+        }
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

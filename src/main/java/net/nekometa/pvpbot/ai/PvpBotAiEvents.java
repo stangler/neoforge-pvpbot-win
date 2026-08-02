@@ -292,14 +292,13 @@ public final class PvpBotAiEvents {
             return;
         }
 
+        // クリティット発生時にダメージ+2.0(ビーストモード時)を付与。
+        // 毎回 remove → add する方式で、critDamageApplied フラグの
+        // バグ(通常モードで2回目で付与が止まる、ビースト→通常で残る等)を回避する。
+        attr.removeModifier(CRIT_DAMAGE_MODIFIER_ID);
         if (state.beastMode) {
-            attr.removeModifier(CRIT_DAMAGE_MODIFIER_ID);
             attr.addPermanentModifier(new AttributeModifier(
                     CRIT_DAMAGE_MODIFIER_ID, 2.0D, AttributeModifier.Operation.ADD_VALUE));
-        }
-
-        if (state.critDamageApplied) {
-            attr.removeModifier(CRIT_DAMAGE_MODIFIER_ID);
         }
         state.critDamageApplied = true;
     }
