@@ -3,6 +3,8 @@
 Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです。
 元データパック（mcfunction）で実装されていたPvP練習ボットを、JavaのNeoForgeモッドへ移植したものです。
 
+このモッドは [CurseForge: PvP Bot Practice World](https://www.curseforge.com/minecraft/worlds/pvp-bot-practice-world) にインスパイアされて作成されました。
+
 ## 機能
 
 - `/pvpbot start` で高所アリーナへ移動し、Zombieベースの練習ボットと1対1で戦闘
@@ -48,7 +50,13 @@ VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer
 
 ## ボットの動きを調整する
 
-`config/pvpbot-common.toml`（または実行環境の `pvpbot-common.toml`）で以下を変更できます。
+設定ファイル `pvpbot-common.toml` は、実行環境の `config/` フォルダーに自動生成されます。例えば Windows の標準ランチャーであれば以下のようなパスに保存されています。
+
+```
+C:\Users\<ユーザー名>\AppData\Roaming\.minecraft\versions\neoforge-26.1.2.84\config\pvpbot-common.toml
+```
+
+このファイルで以下の項目を変更できます。
 
 | 項目 | 効果 | 推奨値 |
 |---|---|---|
