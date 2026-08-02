@@ -18,9 +18,11 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 
 ## 開発環境
 
-- Java 25
+- Java 25（Gradle Toolchain により自動ダウンロードされるため、手動インストールは不要）
 - Gradle 9.2.1
-- VS Code + Dev Container（推奨）
+- VS Code
+
+ローカル環境で `./gradlew build` などを直接実行できます。`.devcontainer/` は参考用として残していますが、現在は Dev Container を使わずに開発しています。
 
 ## 主なコマンド
 
@@ -70,15 +72,24 @@ C:\Users\<ユーザー名>\AppData\Roaming\.minecraft\versions\neoforge-26.1.2.8
 
 値を大きくするとボットがより俊敏・攻撃的になります。逆に緩くしたい場合は小さくしてください。
 
-## Dev Containerでの開発
+## Dev Containerについて
 
-1. VS Codeでこのリポジトリを開く
-2. コマンドパレット → `Dev Containers: Reopen in Container`
-3. コンテナ内ターミナルで `./gradlew build`
+`.devcontainer/` は参考用に残していますが、現在は使用していません。Gradle ラッパーが Java を自動的にダウンロードするため、Dev Container なしでローカル開発が可能です。
 
-初回はMinecraft本体・マッピング・NeoForgeライブラリのダウンロードで数分〜数十分かかります。
-Gradleキャッシュは named volume（`neoforge-gradle-cache`）で永続化されるため、コンテナ再作成後も再ビルドが高速化されます。
-X11/Wayland/PulseAudio 経由で Windows 上の Windows Minecraft に表示可能です。
+過去に Dev Container を使用した場合、ストレージ容量を節約するために以下のコマンドで不要なコンテナ・イメージ・ボリュームを削除できます。
+
+```bash
+# 停止中のコンテナを削除
+docker container prune
+
+# 未使用のイメージを削除
+docker image prune
+
+# 未使用のボリュームを削除（Gradle キャッシュなど）
+docker volume prune
+```
+
+上記の `docker volume prune` は `neoforge-gradle-cache` などの未使用ボリュームも削除します。実行する前に削除対象のボリュームを確認してください。
 
 ### トラブルシューティング
 
