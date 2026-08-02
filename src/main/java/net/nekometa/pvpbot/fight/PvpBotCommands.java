@@ -136,7 +136,7 @@ public final class PvpBotCommands {
         // Config の記憶値をセッションへ反映してからメニュー付与
         applyConfigToSession(player);
         player.getInventory().add(new net.minecraft.world.item.ItemStack(
-                net.nekometa.pvpbot.ExampleMod.PVPBOT_MENU_ITEM.get()));
+                net.nekometa.pvpbot.PvPBotMod.PVPBOT_MENU_ITEM.get()));
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.menu_given"));
         return 1;
     }
