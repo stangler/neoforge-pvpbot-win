@@ -74,7 +74,8 @@ public final class BotSpawner {
         var dmg = bot.getAttribute(Attributes.ATTACK_DAMAGE);
         if (dmg != null) dmg.setBaseValue(attackDamageForTier(strengthTier));
         var atkKb = bot.getAttribute(Attributes.ATTACK_KNOCKBACK);
-        if (atkKb != null) atkKb.setBaseValue(3.5D);
+        // ノックバックを控えめにし、プレイヤーが距離を取りにくくする
+        if (atkKb != null) atkKb.setBaseValue(2.5D);
         // 攻撃リーチをプレイヤー相当に近づける
         var atkRange = bot.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
         if (atkRange != null) atkRange.setBaseValue(3.0D);

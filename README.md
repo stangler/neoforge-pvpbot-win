@@ -7,9 +7,12 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 
 - `/pvpbot start` で高所アリーナへ移動し、Zombieベースの練習ボットと1対1で戦闘
 - 防具ティア、勝敗方式（死亡 / ヒット数先取）、Beastモード、敵の強さを `/pvpbot` コマンドまたはGUIで設定
-- ボットはストレーフ、WTAP、ジャンプリセット、クリットを組み合わせたAIで動作
+- ボットはストレーフ、WTAP、ジャンプリセット、クリットを組み合わせた攻撃的なAIで動作
+  - プレイヤーとの距離に応じて加速し、近接時でも小刻みに動いて照準を外させる
+  - `pvpbot-common.toml` の `ai.*` / `botBaseMovementSpeed` / `botSpeedAmplifier` で俊敏さを調整可能
 - 終了時は開始前の位置・視点・ゲームモードへ復帰
 - 設定は再起動後も `pvpbot-common.toml` に自動保存される
+- start 連打・死亡リスポーン時のボット2体化を防止
 
 ## 開発環境
 
@@ -42,6 +45,22 @@ VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer
 | `/pvpbot beast <true/false>` | Beastモード切替 |
 | `/pvpbot strength <0-4>` | 敵の強さ（0=弱, 1=易, 2=普通, 3=強, 4=激強） |
 | `/pvpbot hitsdebug <count>` | ヒット数決着の閾値を一時変更（検証用） |
+
+## ボットの動きを調整する
+
+`config/pvpbot-common.toml`（または実行環境の `pvpbot-common.toml`）で以下を変更できます。
+
+| 項目 | 効果 | 推奨値 |
+|---|---|---|
+| `ai.aiChaseSpeed` | 間合い外での接近速度 | 0.35〜0.6 |
+| `ai.aiStrafeSpeed` | サイドステップの大きさ | 0.35〜0.7 |
+| `ai.aiErraticChance` | 方向転換を不規則にする確率 | 0.18〜0.5 |
+| `ai.aiRandomDodgeChance` | ランダム回避ステップの確率 | 0.15〜0.5 |
+| `botBaseMovementSpeed` | ボットの基礎移動速度 | 0.45〜0.7 |
+| `botSpeedAmplifier` | ボットのスピード効果レベル（0=Speed I） | 1〜4 |
+| `botFollowRange` | プレイヤーを追跡する最大距離 | 512 |
+
+値を大きくするとボットがより俊敏・攻撃的になります。逆に緩くしたい場合は小さくしてください。
 
 ## Dev Containerでの開発
 

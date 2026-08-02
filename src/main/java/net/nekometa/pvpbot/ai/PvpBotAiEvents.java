@@ -88,33 +88,49 @@ public final class PvpBotAiEvents {
         }
     }
 
-    /** プレイヤーの方を向く。攻撃間合い内ではさらに小さく左右にステップ。 */
+    /**
+     * プレイヤーの方を向き、積極的に距離を詰める。
+     * 攻撃間合い内でも小さく左右にステップし、プレイヤーの照準を外させる。
+     * 離れているほど加速し、空中でも少しだけ前進する。
+     */
     private static void tickChase(LivingEntity bot, Player player, BotAiState state) {
         double distSqr = bot.distanceToSqr(player);
+        facePlayer(bot, player);
+
         if (distSqr <= MELEE_RANGE_SQR) {
-            // 間合い内：プレイヤーを向きながら小さく左右ステップ（照準を外させる）
-            facePlayer(bot, player);
+            // 間合い内：激しく小さく左右ステップ（照準を外させ、連打を避ける）
             if (bot.onGround() && state.hitCount < 1
                     && bot.getRandom().nextDouble() < net.nekometa.pvpbot.Config.AI_RANDOM_DODGE_CHANCE.get()) {
-                double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get() * 0.6D;
+                double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get() * 0.7D;
                 double direction = bot.getRandom().nextBoolean() ? strafeSpeed : -strafeSpeed;
                 sideStepTowards(bot, player, direction);
             }
             return;
         }
 
-        // 間合い外：プレイヤー方向へ滑らかに前進して距離を詰める
-        facePlayer(bot, player);
-        if (!bot.onGround()) {
-            return; // 空中では前進は重力・ノックバックに任せる
-        }
+        // 間合い外：プレイヤー方向へ前進して距離を詰める
         Vec3 forward = forwardVector(bot.getYRot());
-        double chaseSpeed = net.nekometa.pvpbot.Config.AI_CHASE_SPEED.get();
+        double baseChaseSpeed = net.nekometa.pvpbot.Config.AI_CHASE_SPEED.get();
+        // 離れているほど加速（最大1.5倍）
+        double accel = distSqr > CHASE_ACCEL_RANGE_SQR ? 1.5D
+                : 1.0D + 0.5D * (distSqr - MELEE_RANGE_SQR) / (CHASE_ACCEL_RANGE_SQR - MELEE_RANGE_SQR);
+        double chaseSpeed = Math.min(baseChaseSpeed * accel, MAX_CHASE_SPEED);
+
         double destX = bot.getX() + forward.x * chaseSpeed;
         double destZ = bot.getZ() + forward.z * chaseSpeed;
         if (isSafeSideStepTarget(bot.level(), destX, bot.getY(), destZ)) {
             Vec3 motion = bot.getDeltaMovement();
-            bot.setDeltaMovement(forward.x * chaseSpeed, motion.y, forward.z * chaseSpeed);
+            if (bot.onGround()) {
+                // 地上：スムーズに加速
+                bot.setDeltaMovement(forward.x * chaseSpeed, motion.y, forward.z * chaseSpeed);
+            } else {
+                // 空中でも少し前進（完全に止まらない）
+                double airControl = 0.15D;
+                bot.setDeltaMovement(
+                        motion.x + forward.x * airControl,
+                        motion.y,
+                        motion.z + forward.z * airControl);
+            }
         }
     }
 
@@ -128,9 +144,8 @@ public final class PvpBotAiEvents {
 
     /**
      * ai:strafe + ai:strafe-c
-     * 65tickで一周するタイマー。前半(0-32)は左、後半(32-64)は右へ0.2ブロックずつ
-     * サイドステップする。ただし「自分が地上」「直近ヒットなし」
-     * 「プレイヤーが滞空中」「プレイヤーが直近ジャンプ済でない」の全条件を満たす時のみ。
+     * 65tickで一周するタイマー。前半(0-32)は左、後半(32-64)は右へサイドステップする。
+     * プレイヤーが空中の時は大きく、地上の時でも小さくステップする。
      */
     private static void tickStrafe(LivingEntity bot, Player player, BotAiState state) {
         state.strafeTimer++;
@@ -147,16 +162,29 @@ public final class PvpBotAiEvents {
         boolean botOnGround = bot.onGround();
         boolean noRecentHit = state.hitCount < 1;
         boolean playerAirborne = !player.onGround();
-        boolean playerNotFreshlyJumped = player.onGround(); // jumptest2近似(下記コメント参照)
+        double distSqr = bot.distanceToSqr(player);
 
-        // 元: unless predicate code:on-air unless score %hitcount var matches 1..
-        //     if entity @p[predicate=code:on-air] unless score @p jumptest2 matches 1
-        // "unless jumptest2 matches 1" は「ジャンプ直後でない」の意だが、
-        // Java版では簡略化のため player.onGround() で近似している(要調整)。
-        if (botOnGround && noRecentHit && playerAirborne && bot.distanceToSqr(player) > MELEE_RANGE_SQR) {
+        if (!botOnGround || !noRecentHit) {
+            return;
+        }
+
+        double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get();
+        if (distSqr <= MELEE_RANGE_SQR) {
+            // 間合い内：小刻みに動いて照準を外す
+            if (bot.getRandom().nextDouble() < 0.35D) {
+                boolean forward = state.strafeTimer <= 32;
+                sideStepTowards(bot, player, forward ? -strafeSpeed * 0.5D : strafeSpeed * 0.5D);
+            }
+            return;
+        }
+
+        // 間合い外：プレイヤーが空中なら大きく、地上でも小さく動く
+        if (playerAirborne) {
             boolean forward = state.strafeTimer <= 32;
-            double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get();
             sideStepTowards(bot, player, forward ? -strafeSpeed : strafeSpeed);
+        } else if (bot.getRandom().nextDouble() < 0.25D) {
+            boolean forward = state.strafeTimer <= 32;
+            sideStepTowards(bot, player, forward ? -strafeSpeed * 0.35D : strafeSpeed * 0.35D);
         }
     }
 
@@ -165,10 +193,11 @@ public final class PvpBotAiEvents {
      * ai:strafe はプレイヤーが空中の時しか発動しないため、これを補い常に多少の
      * 予測不能な動きを出すための追加処理(元データパックには存在しない拡張)。
      *
-     * 近接攻撃の間合い内では発動させない。sideStepTowards は瞬間移動(teleportTo)
-     * のため、攻撃直前にワープすると近接リーチから外れてヒットしなくなるバグを防ぐ。
+     * 間合い内では動きを小さくして攻撃を妨害しない。
      */
     private static final double MELEE_RANGE_SQR = 2.5D * 2.5D;
+    private static final double CHASE_ACCEL_RANGE_SQR = 6.0D * 6.0D;
+    private static final double MAX_CHASE_SPEED = 0.9D;
 
     private static void tickRandomDodge(LivingEntity bot, Player player, BotAiState state) {
         double dodgeChance = net.nekometa.pvpbot.Config.AI_RANDOM_DODGE_CHANCE.get();
@@ -178,13 +207,18 @@ public final class PvpBotAiEvents {
         if (!bot.onGround() || state.hitCount >= 1) {
             return;
         }
-        if (bot.distanceToSqr(player) <= MELEE_RANGE_SQR) {
-            return; // 攻撃間合い内: 回避で攻撃を妨げない
-        }
         if (bot.getRandom().nextDouble() >= dodgeChance) {
             return;
         }
         double strafeSpeed = net.nekometa.pvpbot.Config.AI_STRAFE_SPEED.get();
+        double distSqr = bot.distanceToSqr(player);
+        if (distSqr <= MELEE_RANGE_SQR) {
+            // 間合い内: 小さく動くだけ（攻撃を妨げない）
+            strafeSpeed *= 0.35D;
+        } else if (distSqr <= CHASE_ACCEL_RANGE_SQR) {
+            // 中距離: やや小さく
+            strafeSpeed *= 0.7D;
+        }
         double direction = bot.getRandom().nextBoolean() ? strafeSpeed : -strafeSpeed;
         sideStepTowards(bot, player, direction);
     }
@@ -192,9 +226,7 @@ public final class PvpBotAiEvents {
     /**
      * ai:wtap
      * プレイヤーが滞空中なら移動量をゼロ化(その場停止)し、
-     * 距離4以内ならさらに少し前進(^ ^ ^0.17)して距離を詰める。
-     * 加えて、ブロックにめり込んで動けなくなった場合の脱出処理と、
-     * プレイヤーのjumptest2フラグの着地時リセットを行う。
+     * 距離に応じて素早く距離を詰める。地上でもプレイヤーが後退している場合は追撃する。
      */
     private static void tickWtap(LivingEntity bot, Player player, BotAiState state) {
         boolean playerAirborne = !player.onGround();
@@ -205,23 +237,28 @@ public final class PvpBotAiEvents {
             // それ以外では前進して距離を詰め続ける。
             if (dist <= 2.5D) {
                 bot.setDeltaMovement(Vec3.ZERO);
-            } else if (dist <= 4.0D) {
+            } else {
+                double wtapClose = Math.min(dist, 6.0D);
+                double step = 0.12D * wtapClose;
                 Vec3 forward = forwardVector(bot.getYRot());
-                double destX = bot.getX() + forward.x * 0.17D;
+                double destX = bot.getX() + forward.x * step;
                 double destY = bot.getY();
-                double destZ = bot.getZ() + forward.z * 0.17D;
+                double destZ = bot.getZ() + forward.z * step;
                 if (isSafeSideStepTarget(bot.level(), destX, destY, destZ)) {
                     bot.teleportTo(destX, destY, destZ);
                 }
             }
+        } else if (bot.onGround() && dist > 2.5D && dist <= 5.0D) {
+            // プレイヤーが地上で少し離れている：すぐに追いつく
+            Vec3 forward = forwardVector(bot.getYRot());
+            double step = 0.25D;
+            double destX = bot.getX() + forward.x * step;
+            double destY = bot.getY();
+            double destZ = bot.getZ() + forward.z * step;
+            if (isSafeSideStepTarget(bot.level(), destX, destY, destZ)) {
+                bot.teleportTo(destX, destY, destZ);
+            }
         }
-
-        // アンチ・埋まり込み(元: unless block ~ ~ ~ air run tp @s ~ ~0.1 ~)
-        // Java側では「立っていない(空中でもない=ブロック内にいる)」ケースの厳密な
-        // ブロック判定が煩雑なため、ひとまず省略。詰まる不具合が確認された場合に追加する。
-
-        // jumptest2の着地時リセットは player.onGround() を直接使う近似のため、
-        // Java側では専用のリセット処理は不要(状態を保持していないため)。
     }
 
     /**
@@ -263,15 +300,21 @@ public final class PvpBotAiEvents {
 
     /**
      * code:main/asbot のcrit判定部分:
-     * プレイヤーが1.2〜2.8ブロック以内、自分が地上、15%抽選に当たったら
-     * 上方向へ跳ねて(Motion.y=0.4)クリティカル判定を狙う。
+     * プレイヤーが近接〜中距離(0.8〜4.0ブロック)以内、自分が地上、一定確率で
+     * 上方向へ跳ねてクリティカル判定を狙う。距離が近いほど発動しやすい。
      */
     private static void tickCritJumpTrigger(LivingEntity bot, Player player, BotAiState state, ServerLevel level) {
         double distSqr = bot.distanceToSqr(player);
-        boolean inRange = distSqr >= (1.2D * 1.2D) && distSqr <= (2.8D * 2.8D);
-        if (bot.onGround() && inRange && bot.getRandom().nextDouble() < state.critChance) {
+        boolean inRange = distSqr >= (0.8D * 0.8D) && distSqr <= (4.0D * 4.0D);
+        if (!bot.onGround() || !inRange) {
+            return;
+        }
+        // 近いほどクリティカルを狙いやすい
+        double distanceFactor = 1.0D - (Math.sqrt(distSqr) - 0.8D) / 3.2D;
+        double adjustedChance = state.critChance * distanceFactor;
+        if (bot.getRandom().nextDouble() < adjustedChance) {
             Vec3 motion = bot.getDeltaMovement();
-            bot.setDeltaMovement(motion.x, 0.4D, motion.z);
+            bot.setDeltaMovement(motion.x, 0.42D, motion.z);
         }
     }
 

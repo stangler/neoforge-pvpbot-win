@@ -65,22 +65,22 @@ public class Config {
     /** effects: プレイヤー速度レベル（0=Speed I）。 */
     public static final ModConfigSpec.IntValue PLAYER_SPEED_AMPLIFIER = BUILDER
             .comment("Player speed effect amplifier during fight (0=Speed I)")
-            .defineInRange("playerSpeedAmplifier", 1, 0, 4);
+            .defineInRange("playerSpeedAmplifier", 1, 0, 9);
 
     /** effects: ボット速度レベル（0=Speed I）。 */
     public static final ModConfigSpec.IntValue BOT_SPEED_AMPLIFIER = BUILDER
             .comment("Bot speed effect amplifier during fight (0=Speed I)")
-            .defineInRange("botSpeedAmplifier", 1, 0, 4);
+            .defineInRange("botSpeedAmplifier", 2, 0, 9);
 
     /** ボットの基礎移動速度属性値。 */
     public static final ModConfigSpec.DoubleValue BOT_BASE_MOVEMENT_SPEED = BUILDER
             .comment("Bot base movement speed attribute value")
-            .defineInRange("botBaseMovementSpeed", 0.3969D, 0.1D, 1.0D);
+            .defineInRange("botBaseMovementSpeed", 0.45D, 0.1D, 1.5D);
 
     /** ボットのフォロー範囲。 */
     public static final ModConfigSpec.DoubleValue BOT_FOLLOW_RANGE = BUILDER
             .comment("Bot follow range attribute value")
-            .defineInRange("botFollowRange", 200.0D, 16.0D, 512.0D);
+            .defineInRange("botFollowRange", 512.0D, 16.0D, 512.0D);
 
     static {
         BUILDER.pop();
@@ -90,22 +90,22 @@ public class Config {
     /** ai:strafe の1tickあたりの横移動量。大きいほど機敏に見える。 */
     public static final ModConfigSpec.DoubleValue AI_STRAFE_SPEED = BUILDER
             .comment("Bot sidestep distance per tick during strafing. Higher = more agile-looking movement")
-            .defineInRange("aiStrafeSpeed", 0.2D, 0.05D, 0.6D);
+            .defineInRange("aiStrafeSpeed", 0.35D, 0.05D, 0.8D);
 
     /** プレイヤーとの距離を詰める前進速度（1tickあたり）。 */
     public static final ModConfigSpec.DoubleValue AI_CHASE_SPEED = BUILDER
             .comment("Forward chase distance per tick when the bot is outside melee range. Higher = bot closes distance faster")
-            .defineInRange("aiChaseSpeed", 0.18D, 0.0D, 0.6D);
+            .defineInRange("aiChaseSpeed", 0.35D, 0.0D, 0.9D);
 
     /** 毎tickの確率でストレーフの周期タイマーをランダムな値へ飛ばし、方向転換を不規則にする。 */
     public static final ModConfigSpec.DoubleValue AI_ERRATIC_CHANCE = BUILDER
             .comment("Per-tick chance to randomly jump the strafe cycle timer, making direction changes irregular instead of a clean left-right pattern")
-            .defineInRange("aiErraticChance", 0.08D, 0.0D, 0.5D);
+            .defineInRange("aiErraticChance", 0.18D, 0.0D, 0.8D);
 
     /** プレイヤーの滞空状態に関係なく、毎tickの確率でランダムな向きへ小さく回避ステップする。 */
     public static final ModConfigSpec.DoubleValue AI_RANDOM_DODGE_CHANCE = BUILDER
             .comment("Per-tick chance for a small random dodge step, independent of whether the player is airborne. Makes the bot feel active even when the player stays grounded")
-            .defineInRange("aiRandomDodgeChance", 0.05D, 0.0D, 0.5D);
+            .defineInRange("aiRandomDodgeChance", 0.15D, 0.0D, 0.8D);
 
     static {
         BUILDER.pop();

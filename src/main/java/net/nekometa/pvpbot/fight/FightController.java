@@ -67,6 +67,19 @@ public final class FightController {
     }
 
     /**
+     * 指定座標周辺の bot タグ付きゾンビを無条件で全て削除する。
+     * session に依存せず、2体化防止の最終手段として使う。
+     */
+    private static void discardAllBotZombies(ServerLevel level, Vec3 center, double range) {
+        net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(
+                center.x - range, center.y - 64.0D, center.z - range,
+                center.x + range, center.y + 64.0D, center.z + range);
+        level.getEntitiesOfClass(net.minecraft.world.entity.monster.zombie.Zombie.class, box,
+                        e -> e.entityTags().contains("bot"))
+                .forEach(net.minecraft.world.entity.Entity::discard);
+    }
+
+    /**
      * 高所に石床＋光源＋周囲のガラス壁を構築する。
      * 床は全面シーランタン（夜間スポーン防止）、外周ガラス壁＋天井で完全密閉しモブの侵入を防ぐ。
      */
@@ -196,11 +209,20 @@ public final class FightController {
         if (oldSession.state == FightState.IDLE) {
             return;
         }
-        if (oldSession.botUuid != null && oldPlayer.level() instanceof ServerLevel level) {
+        if (!(oldPlayer.level() instanceof ServerLevel level)) {
+            return;
+        }
+        // 旧セッションのボットを確実に削除
+        if (oldSession.botUuid != null) {
             net.minecraft.world.entity.Entity bot = level.getEntity(oldSession.botUuid);
             if (bot != null) {
                 bot.discard();
             }
+        }
+        // さらにアリーナ周辺の bot タグ付きゾンビを全て掃除
+        if (oldSession.arenaCenterX != 0.0D || oldSession.arenaCenterZ != 0.0D) {
+            Vec3 arenaCenter = new Vec3(oldSession.arenaCenterX, oldSession.arenaFloorY, oldSession.arenaCenterZ);
+            discardAllBotZombies(level, arenaCenter, 128.0D);
         }
     }
 
@@ -210,8 +232,14 @@ public final class FightController {
             return;
         }
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
+        // 戦闘中は start を無視（ボタンダブルクリック・コマンド連打による2体化防止）
+        if (session.state == FightState.SPAWNING || session.state == FightState.FIGHTING) {
+            return;
+        }
         // 保険: 何らかの理由で前回セッションのボットが残っていたら先に消す(2体化防止)
         removeBotEntities(level, session);
+        // さらに保険: プレイヤー周囲広範囲の bot タグ付きゾンビを全て強制削除
+        discardAllBotZombies(level, player.position(), 128.0D);
         session.state = FightState.SPAWNING;
         session.finalTimer = 0;
         session.comboCount = 0;
@@ -343,18 +371,18 @@ public final class FightController {
         net.nekometa.pvpbot.ai.BotAiState state =
                 bot.getData(net.nekometa.pvpbot.ai.BotAiAttachments.BOT_AI_STATE.get());
         state.jumpresLevel = switch (session.enemyStrengthTier) {
-            case 0 -> 2;
-            case 1 -> 4;
+            case 0 -> 3;
+            case 1 -> 5;
             case 3 -> 6;
             case 4 -> 6;
             default -> 6; // 2 = 普通
         };
         state.critChance = switch (session.enemyStrengthTier) {
-            case 0 -> 0.05D;
-            case 1 -> 0.10D;
-            case 3 -> 0.20D;
-            case 4 -> 0.30D;
-            default -> 0.15D; // 2 = 普通
+            case 0 -> 0.08D;
+            case 1 -> 0.15D;
+            case 3 -> 0.30D;
+            case 4 -> 0.45D;
+            default -> 0.20D; // 2 = 普通
         };
         state.beastMode = session.beastMode;
     }
