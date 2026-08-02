@@ -9,6 +9,7 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 - 防具ティア、勝敗方式（死亡 / ヒット数先取）、Beastモード、敵の強さを `/pvpbot` コマンドまたはGUIで設定
 - ボットはストレーフ、WTAP、ジャンプリセット、クリットを組み合わせたAIで動作
 - 終了時は開始前の位置・視点・ゲームモードへ復帰
+- 設定は再起動後も `pvpbot-common.toml` に自動保存される
 
 ## 開発環境
 
@@ -25,6 +26,8 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 ./gradlew data          # データ生成
 ./gradlew clean         # ビルド成果物をクリア
 ```
+
+VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer の各デバッグ起動も可能です。
 
 ## ゲーム内コマンド
 
@@ -47,7 +50,8 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 3. コンテナ内ターミナルで `./gradlew build`
 
 初回はMinecraft本体・マッピング・NeoForgeライブラリのダウンロードで数分〜数十分かかります。
-Gradleキャッシュはnamed volumeで永続化されるため、コンテナ再作成後も再ビルドが高速化されます。
+Gradleキャッシュは named volume（`neoforge-gradle-cache`）で永続化されるため、コンテナ再作成後も再ビルドが高速化されます。
+X11/Wayland/PulseAudio 経由で Windows 上の Windows Minecraft に表示可能です。
 
 ## ドキュメント
 
