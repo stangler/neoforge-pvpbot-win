@@ -8,7 +8,7 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 ## 機能
 
 - `/pvpbot start` で高所アリーナへ移動し、Zombieベースの練習ボットと1対1で戦闘
-- 防具ティア、勝敗方式（死亡 / ヒット数先取）、Beastモード、敵の強さを `/pvpbot` コマンドまたはGUIで設定
+- 防具ティア、勝敗方式（死亡 / ヒット数先取）、敵の強さを `/pvpbot` コマンドまたはGUIで設定
 - ボットはストレーフ、WTAP、ジャンプリセット、クリットを組み合わせた攻撃的なAIで動作
   - プレイヤーとの距離に応じて加速し、近接時でも小刻みに動いて照準を外させる
   - `pvpbot-common.toml` の `ai.*` / `botBaseMovementSpeed` / `botSpeedAmplifier` で俊敏さを調整可能
@@ -46,7 +46,6 @@ VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer
 | `/pvpbot menu` | 設定GUIを開くアイテムを付与 |
 | `/pvpbot armor <0-3>` | 防具ティア（0=革, 1=鉄, 2=ダイヤ, 3=ネザライト） |
 | `/pvpbot boxing <0-4>` | 勝敗方式（0=死亡, 1=50, 2=100, 3=500, 4=1000ヒット） |
-| `/pvpbot beast <true/false>` | Beastモード切替 |
 | `/pvpbot strength <0-4>` | 敵の強さ（0=弱, 1=易, 2=普通, 3=強, 4=激強） |
 | `/pvpbot hitsdebug <count>` | ヒット数決着の閾値を一時変更（検証用） |
 
