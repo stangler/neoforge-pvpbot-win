@@ -22,13 +22,25 @@ Minecraft 26.1.2 / NeoForge 26.1.2 モード「PvP Practice Bot」。
 
 VS Code 上で直接デバッグ起動する場合は `.vscode/launch.json` の Client / Server / Data / GameTestServer 設定を使います。
 
-## Dev Container
+## Dev Container（無効化中）
+
+> **現在は DevContainer を使用せず、ローカル環境で開発しています。**
+> 設定は `.devcontainer.disabled/` に保持しており、いつでも復元可能です。
 
 - `devcontainer.json` + `Dockerfile(eclipse-temurin:25-jdk)` ベース
 - 初回リオープン: `Dev Containers: Reopen in Container`
 - `postCreateCommand` が `gradlew --version` を実行
 - Gradle キャッシュは named volume `neoforge-gradle-cache` で永続化
 - WSL2/gRPC 上の Linux GUI(X11/Wayland/PulseAudio)へレンダリング
+
+### 再び有効化する手順
+
+```bash
+# ディレクトリ名を戻すだけで再開可能
+mv .devcontainer.disabled .devcontainer
+```
+
+リネーム後、VS Code で「Dev Containers: Reopen in Container」が再び利用可能になります。詳細は `.devcontainer.disabled/README.md` を参照してください。
 
 ## Java アーキテクチャ
 

@@ -1,7 +1,12 @@
 # セットアップ手順(Windows 11 + Docker Desktop + VS Code)
 
+> **注意: DevContainer は現在無効化されています。**
+> 設定は `.devcontainer.disabled/` に保持しています。再有効化する場合は
+> `move .devcontainer.disabled .devcontainer`（Windows cmd）で
+> ディレクトリ名を戻してください。詳細は `.devcontainer.disabled/README.md` を参照。
+
 ## 済んでいる作業
-- `.devcontainer/Dockerfile` / `devcontainer.json` 作成済み
+- `.devcontainer.disabled/Dockerfile` / `devcontainer.json` 作成済み
 - `NeoForgeMDKs/MDK-26.1.2-ModDevGradle` 公式テンプレをclone・`.git`除去・展開済み
 - バージョン実値 確認済み(2026-07-26時点):
   - `neo_version=26.1.2.84`(仕様書一致)
@@ -28,7 +33,7 @@
 2. コマンドパレット → `Dev Containers: Reopen in Container`
 3. 初回ビルドはコンテナイメージ取得(`eclipse-temurin:25-jdk`)+
    `postCreateCommand`で`chmod +x gradlew && ./gradlew --version`実行
-   - タグが見つからない場合は `.devcontainer/Dockerfile` の
+   - タグが見つからない場合は `.devcontainer.disabled/Dockerfile` の
      `FROM eclipse-temurin:25-jdk` を `eclipse-temurin:25-jdk-noble` に変更
 4. コンテナ内ターミナルで:
    ```

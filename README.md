@@ -22,7 +22,7 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 - Gradle 9.2.1
 - VS Code
 
-ローカル環境で `./gradlew build` などを直接実行できます。`.devcontainer/` は参考用として残していますが、現在は Dev Container を使わずに開発しています。
+ローカル環境で `./gradlew build` などを直接実行できます。`.devcontainer.disabled/` に設定を残したうえで Dev Container を無効化しています。再有効化の手順は[後述](#dev-containerについて)を参照してください。
 
 ## 主なコマンド
 
@@ -74,7 +74,23 @@ C:\Users\<ユーザー名>\AppData\Roaming\.minecraft\versions\neoforge-26.1.2.8
 
 ## Dev Containerについて
 
-`.devcontainer/` は参考用に残していますが、現在は使用していません。Gradle ラッパーが Java を自動的にダウンロードするため、Dev Container なしでローカル開発が可能です。
+現在は Dev Container を無効化し、ローカル環境で開発しています。設定ファイルは `.devcontainer.disabled/` に残しており、いつでも復元可能です。Gradle ラッパーが Java を自動的にダウンロードするため、Dev Container なしでローカル開発が可能です。
+
+### 再有効化する手順
+
+ディレクトリ名を `.devcontainer` に戻すだけで、VS Code の「Dev Containers: Reopen in Container」が再び利用可能になります。
+
+```bash
+# Windows (cmd)
+move .devcontainer.disabled .devcontainer
+
+# Linux / macOS
+mv .devcontainer.disabled .devcontainer
+```
+
+詳細は `.devcontainer.disabled/README.md` を参照してください。
+
+### 不要な Docker リソースの削除
 
 過去に Dev Container を使用した場合、ストレージ容量を節約するために以下のコマンドで不要なコンテナ・イメージ・ボリュームを削除できます。
 
