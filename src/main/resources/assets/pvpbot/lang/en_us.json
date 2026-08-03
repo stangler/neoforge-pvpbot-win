@@ -14,13 +14,10 @@
   "pvpbot.screen.boxing.100": "100 hits",
   "pvpbot.screen.boxing.500": "500 hits",
   "pvpbot.screen.boxing.1000": "1000 hits",
-  "pvpbot.screen.beast": "Beast Mode: %s",
-  "pvpbot.screen.on": "ON",
-  "pvpbot.screen.off": "OFF",
   "pvpbot.screen.start": "Start Fight",
   "pvpbot.screen.close": "Close",
   "pvpbot.screen.status": "Show current settings",
-  "pvpbot.screen.summary": "Saved: Armor=%s / Win=%s / Beast=%s",
+  "pvpbot.screen.summary": "Saved: Armor=%s / Win=%s",
 
   "pvpbot.item.ragequit": "Ragequit",
   "pvpbot.bot.name": "Practice Bot",
@@ -32,11 +29,10 @@
   "pvpbot.msg.title.lose": "Loss!",
   "pvpbot.msg.title.lose_void": "Fell into the void…",
 
-  "pvpbot.cmd.beast": "beastMode=%s",
   "pvpbot.cmd.armor": "armorTier=%s",
   "pvpbot.cmd.boxing": "boxingMode=%s",
   "pvpbot.cmd.strength": "strengthTier=%s",
   "pvpbot.cmd.hitsdebug": "hitThresholdOverride=%s",
   "pvpbot.cmd.menu_given": "Gave PvP Bot settings item",
-  "pvpbot.cmd.status": "[PvP Bot] Armor=%s / Win=%s / Beast=%s / Strength=%s / State=%s"
+  "pvpbot.cmd.status": "[PvP Bot] Armor=%s / Win=%s / Strength=%s / State=%s"
 }

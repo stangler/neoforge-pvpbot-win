@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * code:armorsets/apply_enemy, code:armorsets/apply_player, code:beastgear の移植。
+ * code:armorsets/apply_enemy, code:armorsets/apply_player の移植。
  *
  * 元は看板UIで選ばれた %enemy_armor_set / %player_armor_set (0〜3) に応じて
  * フルセット装備。ここでは整数tier引数として受け取る形にした
@@ -47,12 +47,6 @@ public final class ArmorSets {
         equip(entity, EquipmentSlot.CHEST, chest);
         equip(entity, EquipmentSlot.LEGS, legs);
         equip(entity, EquipmentSlot.FEET, boots);
-    }
-
-    /** code:beastgear: ダイヤフルセット + 壊れない木の剣。 */
-    public static void applyBeastGear(LivingEntity entity) {
-        applyFullSet(entity, 2);
-        equip(entity, EquipmentSlot.MAINHAND, Items.WOODEN_SWORD);
     }
 
     private static void equip(LivingEntity entity, EquipmentSlot slot, Item item) {

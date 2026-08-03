@@ -14,13 +14,11 @@ public class PvpBotSettingsScreen extends Screen {
 
     private int armorTier;
     private int boxingMode;
-    private boolean beastMode;
 
     public PvpBotSettingsScreen() {
         super(Component.translatable("pvpbot.screen.title"));
         this.armorTier = ClientSettings.getArmorTier();
         this.boxingMode = ClientSettings.getBoxingMode();
-        this.beastMode = ClientSettings.isBeastMode();
     }
 
     @Override
@@ -31,7 +29,6 @@ public class PvpBotSettingsScreen extends Screen {
         // サーバー側セッションにも現在の記憶値を同期
         sendCommand("pvpbot armor " + armorTier);
         sendCommand("pvpbot boxing " + boxingMode);
-        sendCommand("pvpbot beast " + beastMode);
 
         addRenderableWidget(Button.builder(armorLabel(), b -> {
             armorTier = (armorTier + 1) % 4;
@@ -48,14 +45,6 @@ public class PvpBotSettingsScreen extends Screen {
             sendCommand("pvpbot boxing " + boxingMode);
         }).bounds(centerX - 100, y, 200, 20).build());
 
-        y += 24;
-        addRenderableWidget(Button.builder(beastLabel(), b -> {
-            beastMode = !beastMode;
-            ClientSettings.setBeastMode(beastMode);
-            b.setMessage(beastLabel());
-            sendCommand("pvpbot beast " + beastMode);
-        }).bounds(centerX - 100, y, 200, 20).build());
-
         y += 28;
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.status"), b -> {
             sendCommand("pvpbot status");
@@ -65,7 +54,6 @@ public class PvpBotSettingsScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.start"), b -> {
             sendCommand("pvpbot armor " + armorTier);
             sendCommand("pvpbot boxing " + boxingMode);
-            sendCommand("pvpbot beast " + beastMode);
             sendCommand("pvpbot start");
             onClose();
         }).bounds(centerX - 100, y, 200, 20).build());
@@ -94,11 +82,6 @@ public class PvpBotSettingsScreen extends Screen {
             default -> "pvpbot.screen.boxing.off";
         };
         return Component.translatable("pvpbot.screen.boxing", Component.translatable(key));
-    }
-
-    private Component beastLabel() {
-        Component state = Component.translatable(beastMode ? "pvpbot.screen.on" : "pvpbot.screen.off");
-        return Component.translatable("pvpbot.screen.beast", state);
     }
 
     private void sendCommand(String command) {

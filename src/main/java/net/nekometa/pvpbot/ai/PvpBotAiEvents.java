@@ -44,9 +44,6 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 @EventBusSubscriber(modid = "pvpbot")
 public final class PvpBotAiEvents {
 
-    private static final Identifier CRIT_DAMAGE_MODIFIER_ID =
-            Identifier.fromNamespaceAndPath("pvpbot", "crit_beast_bonus");
-
     private PvpBotAiEvents() {
     }
 
@@ -375,19 +372,6 @@ public final class PvpBotAiEvents {
                     35, 0.4D, 0.8D, 0.4D, 0.06D);
         }
 
-        var attr = bot.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attr == null) {
-            return;
-        }
-
-        // クリティット発生時にダメージ+2.0(ビーストモード時)を付与。
-        // 毎回 remove → add する方式で、critDamageApplied フラグの
-        // バグ(通常モードで2回目で付与が止まる、ビースト→通常で残る等)を回避する。
-        attr.removeModifier(CRIT_DAMAGE_MODIFIER_ID);
-        if (state.beastMode) {
-            attr.addPermanentModifier(new AttributeModifier(
-                    CRIT_DAMAGE_MODIFIER_ID, 2.0D, AttributeModifier.Operation.ADD_VALUE));
-        }
         state.critDamageApplied = true;
     }
 

@@ -29,9 +29,6 @@ public class BotAiState {
     /** ai:crit の %bu-damage。既にattack_damageのcrit補正が入っているかどうか(二重付与防止)。 */
     public boolean critDamageApplied = false;
 
-    /** code:main/asbot の %beast (0以外なら crit ダメージ+2.0)。将来 beastgear 移植時に使用。 */
-    public boolean beastMode = false;
-
     // --- サインUIに相当する有効/無効フラグ。現時点では固定値(全ON)。 ---
     // TODO: sign UI -> GUI/Screen 移植後、ここをプレイヤーの設定値に置き換える。
     public boolean wtapEnabled = true;

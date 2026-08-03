@@ -12,8 +12,6 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * code:spawn の移植。
- * TODO: %beast sign matches 1/2 (ネザライト装備の強化ボット)は未移植。
- *       まず beast=0(基本ティア)のみ。
  */
 public final class BotSpawner {
 
@@ -32,7 +30,7 @@ public final class BotSpawner {
     }
 
     /** @return spawnに成功したエンティティ。addFreshEntity失敗時はnull。 */
-    public static Zombie spawn(ServerLevel level, Vec3 pos, int armorTier, boolean beastMode, int strengthTier) {
+    public static Zombie spawn(ServerLevel level, Vec3 pos, int armorTier, int strengthTier) {
         Zombie bot = EntityType.ZOMBIE.create(level, net.minecraft.world.entity.EntitySpawnReason.MOB_SUMMONED);
         if (bot == null) {
             return null;
@@ -55,13 +53,9 @@ public final class BotSpawner {
         bot.setAggressive(true);
 
         // 装備(TODO: custom_model_data=1 のリソースパック見た目は未対応)
-        if (beastMode) {
-            ArmorSets.applyBeastGear(bot);
-        } else {
-            ArmorSets.applyFullSet(bot, armorTier);
-            bot.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
-            bot.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
-        }
+        ArmorSets.applyFullSet(bot, armorTier);
+        bot.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
+        bot.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
 
         var followRange = bot.getAttribute(Attributes.FOLLOW_RANGE);
         if (followRange != null) followRange.setBaseValue(net.nekometa.pvpbot.Config.BOT_FOLLOW_RANGE.get());

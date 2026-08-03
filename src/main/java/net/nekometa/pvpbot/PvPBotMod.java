@@ -97,10 +97,9 @@ public class PvPBotMod {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("PvP Bot defaults: armor={}, boxing={}, beast={}",
+        LOGGER.info("PvP Bot defaults: armor={}, boxing={}",
                 Config.ARMOR_TIER.getAsInt(),
-                Config.BOXING_MODE.getAsInt(),
-                Config.BEAST_MODE.getAsBoolean());
+                Config.BOXING_MODE.getAsInt());
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

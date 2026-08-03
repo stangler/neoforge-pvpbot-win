@@ -52,14 +52,12 @@ public class FightSession {
     public double arenaCenterX = 0.0D;
     public double arenaCenterZ = 0.0D;
 
-    // --- サインUI(armorsets/beastgear)相当。移植までは固定値。 ---
+    // --- サインUI(armorsets)相当。移植までは固定値。 ---
     // TODO: サインUI→GUI移植後、プレイヤーの選択値に置き換える。
     /** %enemy_armor_set: 0革 1鉄 2ダイヤ 3ネザライト */
     public int enemyArmorTier = 2;
     /** %player_armor_set: 0革 1鉄 2ダイヤ 3ネザライト */
     public int playerArmorTier = 2;
-    /** %beast sign matches 1/2 相当。trueならcode:beastgear(ダイヤ+壊れない木の剣)を適用。 */
-    public boolean beastMode = false;
 
     /** %boxing sign: 0=無効(死亡で決着) 1=50 2=100 3=500 4=1000 ヒット先取で決着(code:hitrace) */
     public int boxingMode = 0;

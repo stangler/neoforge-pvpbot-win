@@ -348,7 +348,7 @@ public final class FightController {
             return;
         }
 
-        var bot = BotSpawner.spawn(level, session.pendingBotPos, session.enemyArmorTier, session.beastMode, session.enemyStrengthTier);
+        var bot = BotSpawner.spawn(level, session.pendingBotPos, session.enemyArmorTier, session.enemyStrengthTier);
         session.botUuid = bot != null ? bot.getUUID() : null;
         if (bot != null) {
             applyStrengthTierToAi(bot, session);
@@ -362,8 +362,8 @@ public final class FightController {
     }
 
     /**
-     * 強さティア(session.enemyStrengthTier)とbeastModeを、ボットのBotAiState
-     * (jumpresLevel/critChance/beastMode)へ反映する。
+     * 強さティア(session.enemyStrengthTier)を、ボットのBotAiState
+     * (jumpresLevel/critChance)へ反映する。
      * jumpresLevel: 1〜5=確率段階(小さいほど発動しづらい)、6=常時。
      * critChance: ai:crit の発動確率(高いほどクリットを狙いやすい)。
      */
@@ -384,7 +384,6 @@ public final class FightController {
             case 4 -> 0.45D;
             default -> 0.20D; // 2 = 普通
         };
-        state.beastMode = session.beastMode;
     }
 
     /**

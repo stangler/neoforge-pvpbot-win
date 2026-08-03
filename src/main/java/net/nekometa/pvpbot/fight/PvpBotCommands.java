@@ -28,9 +28,6 @@ public final class PvpBotCommands {
                         .then(Commands.literal("start").executes(PvpBotCommands::executeStart))
                         .then(Commands.literal("quit").executes(PvpBotCommands::executeQuit))
                         .then(Commands.literal("status").executes(PvpBotCommands::executeStatus))
-                        .then(Commands.literal("beast")
-                                .then(Commands.argument("on", com.mojang.brigadier.arguments.BoolArgumentType.bool())
-                                        .executes(PvpBotCommands::executeBeast)))
                         .then(Commands.literal("armor")
                                 .then(Commands.argument("tier", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
                                         .executes(PvpBotCommands::executeArmor)))
@@ -45,17 +42,6 @@ public final class PvpBotCommands {
                                         .executes(PvpBotCommands::executeHitsDebug)))
                         .then(Commands.literal("menu").executes(PvpBotCommands::executeMenu))
         );
-    }
-
-    private static int executeBeast(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        ServerPlayer player = ctx.getSource().getPlayerOrException();
-        boolean on = com.mojang.brigadier.arguments.BoolArgumentType.getBool(ctx, "on");
-        FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
-        session.beastMode = on;
-        Config.BEAST_MODE.set(on);
-        PvPBotMod.saveConfig();
-        player.sendSystemMessage(Component.translatable("pvpbot.cmd.beast", on));
-        return 1;
     }
 
     private static int executeArmor(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -121,7 +107,6 @@ public final class PvpBotCommands {
                 "pvpbot.cmd.status",
                 armor,
                 boxing,
-                session.beastMode ? "ON" : "OFF",
                 strength,
                 session.state.name()));
         return 1;
@@ -165,7 +150,6 @@ public final class PvpBotCommands {
         session.enemyArmorTier = Config.ARMOR_TIER.getAsInt();
         session.playerArmorTier = Config.ARMOR_TIER.getAsInt();
         session.boxingMode = Config.BOXING_MODE.getAsInt();
-        session.beastMode = Config.BEAST_MODE.getAsBoolean();
         session.enemyStrengthTier = Config.STRENGTH_TIER.getAsInt();
     }
 }

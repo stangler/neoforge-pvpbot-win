@@ -23,10 +23,6 @@ public class Config {
             .comment("Win condition: 0=death, 1=50hits, 2=100, 3=500, 4=1000")
             .defineInRange("boxingMode", 0, 0, 4);
 
-    public static final ModConfigSpec.BooleanValue BEAST_MODE = BUILDER
-            .comment("Beast mode (diamond + unbreakable wooden sword)")
-            .define("beastMode", false);
-
     /** 0弱 1易 2普通 3強 4激強。攻撃力・クリット率・ジャンプリセット頻度に影響。 */
     public static final ModConfigSpec.IntValue STRENGTH_TIER = BUILDER
             .comment("Enemy strength tier: 0=weak, 1=easy, 2=normal, 3=strong, 4=nightmare. Affects bot attack damage, crit chance, and knockback-reset frequency")
