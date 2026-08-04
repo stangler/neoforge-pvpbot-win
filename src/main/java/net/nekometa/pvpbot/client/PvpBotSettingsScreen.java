@@ -106,88 +106,87 @@ public class PvpBotSettingsScreen extends Screen {
             b.setMessage(botSpeedLabel());
         }).bounds(leftX, y, 200, 20).build());
 
-        // 右列: アリーナ設定
-        y = this.height / 2 - 90;
+        // 右列: アリーナ設定（左列の開始位置からさらに下に配置）
+        int rightY = this.height / 2 - 90 + 6 * 24 + 12; // 左列6ボタン + 間隔
         // アリーナ高さ設定ボタン
         addRenderableWidget(Button.builder(arenaYLabel(), b -> {
             arenaY = cycleInt(arenaY, -64, 2032, 16);
             ClientSettings.setArenaY(arenaY);
             b.setMessage(arenaYLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // アリーナ半径設定ボタン
         addRenderableWidget(Button.builder(arenaRadiusLabel(), b -> {
             arenaRadius = cycleInt(arenaRadius, 4, 64, 2);
             ClientSettings.setArenaRadius(arenaRadius);
             b.setMessage(arenaRadiusLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // 壁の高さ設定ボタン
         addRenderableWidget(Button.builder(arenaWallHeightLabel(), b -> {
             arenaWallHeight = cycleInt(arenaWallHeight, 3, 12, 1);
             ClientSettings.setArenaWallHeight(arenaWallHeight);
             b.setMessage(arenaWallHeightLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // ボット配置距離設定ボタン
         addRenderableWidget(Button.builder(botOffsetZLabel(), b -> {
             botOffsetZ = cycleDouble(botOffsetZ, 2.0, 32.0, 1.0);
             ClientSettings.setBotOffsetZ(botOffsetZ);
             b.setMessage(botOffsetZLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // 奈落落下マージン設定ボタン
         addRenderableWidget(Button.builder(voidFallMarginLabel(), b -> {
             voidFallMargin = cycleDouble(voidFallMargin, 1.0, 64.0, 2.0);
             ClientSettings.setVoidFallMargin(voidFallMargin);
             b.setMessage(voidFallMarginLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
-        // AI設定セクション
+        rightY += 24;
         // AI ストレーフ速度設定ボタン
         addRenderableWidget(Button.builder(aiStrafeSpeedLabel(), b -> {
             aiStrafeSpeed = cycleDouble(aiStrafeSpeed, 5, 80, 5);
             ClientSettings.setAiStrafeSpeed(aiStrafeSpeed / 100);
             b.setMessage(aiStrafeSpeedLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // AI チェイス速度設定ボタン
         addRenderableWidget(Button.builder(aiChaseSpeedLabel(), b -> {
             aiChaseSpeed = cycleDouble(aiChaseSpeed, 0, 90, 5);
             ClientSettings.setAiChaseSpeed(aiChaseSpeed / 100);
             b.setMessage(aiChaseSpeedLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // AI 不規則行動確率設定ボタン
         addRenderableWidget(Button.builder(aiErraticChanceLabel(), b -> {
             aiErraticChance = cycleDouble(aiErraticChance, 0, 80, 5);
             ClientSettings.setAiErraticChance(aiErraticChance / 100);
             b.setMessage(aiErraticChanceLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 24;
+        rightY += 24;
         // AI ランダム回避確率設定ボタン
         addRenderableWidget(Button.builder(aiRandomDodgeChanceLabel(), b -> {
             aiRandomDodgeChance = cycleDouble(aiRandomDodgeChance, 0, 80, 5);
             ClientSettings.setAiRandomDodgeChance(aiRandomDodgeChance / 100);
             b.setMessage(aiRandomDodgeChanceLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        }).bounds(rightX, rightY, 200, 20).build());
 
-        y += 28;
         // ステータス確認ボタン
+        y = rightY + 24 + 28;
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.status"), b -> {
             sendCommand("pvpbot status");
         }).bounds(centerX - 100, y, 200, 20).build());
 
-        y += 28;
         // 開始ボタン
+        y += 28;
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.start"), b -> {
             sendCommand("pvpbot armor enemy " + enemyArmorTier);
             sendCommand("pvpbot armor player " + playerArmorTier);
@@ -197,8 +196,8 @@ public class PvpBotSettingsScreen extends Screen {
             onClose();
         }).bounds(centerX - 100, y, 200, 20).build());
 
-        y += 24;
         // 閉じるボタン
+        y += 24;
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.close"), b -> onClose())
                 .bounds(centerX - 100, y, 200, 20).build());
     }
@@ -286,6 +285,25 @@ public class PvpBotSettingsScreen extends Screen {
         double next = current + step;
         if (next > max) {
             return min;
+        }
+        return next;
+    }
+
+    // 未使用メソッドの警告を抑制（将来の拡張用）
+    @SuppressWarnings("unused")
+    private int cycleIntDecrease(int current, int min, int max, int step) {
+        int next = current - step;
+        if (next < min) {
+            return max;
+        }
+        return next;
+    }
+
+    @SuppressWarnings("unused")
+    private double cycleDoubleDecrease(double current, double min, double max, double step) {
+        double next = current - step;
+        if (next < min) {
+            return max;
         }
         return next;
     }
