@@ -11,12 +11,20 @@ public final class ClientSettings {
     private ClientSettings() {
     }
 
-    public static int getArmorTier() {
-        return Config.ARMOR_TIER.getAsInt();
+    public static int getEnemyArmorTier() {
+        return Config.ENEMY_ARMOR_TIER.getAsInt();
     }
 
-    public static void setArmorTier(int tier) {
-        Config.ARMOR_TIER.set(Math.clamp(tier, 0, 3));
+    public static void setEnemyArmorTier(int tier) {
+        Config.ENEMY_ARMOR_TIER.set(Math.clamp(tier, 0, 3));
+    }
+
+    public static int getPlayerArmorTier() {
+        return Config.PLAYER_ARMOR_TIER.getAsInt();
+    }
+
+    public static void setPlayerArmorTier(int tier) {
+        Config.PLAYER_ARMOR_TIER.set(Math.clamp(tier, 0, 3));
     }
 
     public static int getBoxingMode() {

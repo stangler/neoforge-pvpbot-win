@@ -3,7 +3,8 @@
   "item.pvpbot.pvpbot_menu": "PvP Bot Settings",
 
   "pvpbot.screen.title": "PvP Bot Settings",
-  "pvpbot.screen.armor": "Armor: %s",
+  "pvpbot.screen.enemy.armor": "Enemy Armor: %s",
+  "pvpbot.screen.player.armor": "Player Armor: %s",
   "pvpbot.screen.armor.leather": "Leather",
   "pvpbot.screen.armor.iron": "Iron",
   "pvpbot.screen.armor.diamond": "Diamond",
@@ -29,7 +30,9 @@
   "pvpbot.msg.title.lose": "Loss!",
   "pvpbot.msg.title.lose_void": "Fell into the void…",
 
-  "pvpbot.cmd.armor": "armorTier=%s",
+  "pvpbot.cmd.armor": "armorTier (both)=%s",
+  "pvpbot.cmd.enemyarmor": "enemy armorTier=%s",
+  "pvpbot.cmd.playerarmor": "player armorTier=%s",
   "pvpbot.cmd.boxing": "boxingMode=%s",
   "pvpbot.cmd.strength": "strengthTier=%s",
   "pvpbot.cmd.hitsdebug": "hitThresholdOverride=%s",
