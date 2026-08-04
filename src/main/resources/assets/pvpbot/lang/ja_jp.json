@@ -3,7 +3,8 @@
   "item.pvpbot.pvpbot_menu": "PvP Bot 設定",
 
   "pvpbot.screen.title": "PvP Bot 設定",
-  "pvpbot.screen.armor": "防具: %s",
+  "pvpbot.screen.enemy.armor": "敵の防具: %s",
+  "pvpbot.screen.player.armor": "プレイヤーの防具: %s",
   "pvpbot.screen.armor.leather": "革",
   "pvpbot.screen.armor.iron": "鉄",
   "pvpbot.screen.armor.diamond": "ダイヤ",
@@ -29,7 +30,9 @@
   "pvpbot.msg.title.lose": "敗北…",
   "pvpbot.msg.title.lose_void": "奈落へ落下…",
 
-  "pvpbot.cmd.armor": "防具ティア: %s",
+  "pvpbot.cmd.armor": "防具ティア（両方）: %s",
+  "pvpbot.cmd.enemyarmor": "敵の防具ティア: %s",
+  "pvpbot.cmd.playerarmor": "プレイヤーの防具ティア: %s",
   "pvpbot.cmd.boxing": "勝敗方式: %s",
   "pvpbot.cmd.strength": "敵の強さ: %s",
   "pvpbot.cmd.hitsdebug": "ヒット決着数（検証用）: %s",

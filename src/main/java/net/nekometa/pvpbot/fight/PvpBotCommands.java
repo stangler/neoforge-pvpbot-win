@@ -30,7 +30,13 @@ public final class PvpBotCommands {
                         .then(Commands.literal("status").executes(PvpBotCommands::executeStatus))
                         .then(Commands.literal("armor")
                                 .then(Commands.argument("tier", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
-                                        .executes(PvpBotCommands::executeArmor)))
+                                        .executes(PvpBotCommands::executeArmor))
+                                .then(Commands.literal("enemy")
+                                        .then(Commands.argument("tier", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
+                                                .executes(PvpBotCommands::executeEnemyArmor)))
+                                .then(Commands.literal("player")
+                                        .then(Commands.argument("tier", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
+                                                .executes(PvpBotCommands::executePlayerArmor))))
                         .then(Commands.literal("boxing")
                                 .then(Commands.argument("mode", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 4))
                                         .executes(PvpBotCommands::executeBoxing)))
@@ -50,9 +56,32 @@ public final class PvpBotCommands {
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
         session.enemyArmorTier = tier;
         session.playerArmorTier = tier;
-        Config.ARMOR_TIER.set(tier);
+        Config.ENEMY_ARMOR_TIER.set(tier);
+        Config.PLAYER_ARMOR_TIER.set(tier);
         PvPBotMod.saveConfig();
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.armor", tier));
+        return 1;
+    }
+
+    private static int executeEnemyArmor(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        int tier = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "tier");
+        FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
+        session.enemyArmorTier = tier;
+        Config.ENEMY_ARMOR_TIER.set(tier);
+        PvPBotMod.saveConfig();
+        player.sendSystemMessage(Component.translatable("pvpbot.cmd.enemyarmor", tier));
+        return 1;
+    }
+
+    private static int executePlayerArmor(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        int tier = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "tier");
+        FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
+        session.playerArmorTier = tier;
+        Config.PLAYER_ARMOR_TIER.set(tier);
+        PvPBotMod.saveConfig();
+        player.sendSystemMessage(Component.translatable("pvpbot.cmd.playerarmor", tier));
         return 1;
     }
 
@@ -147,8 +176,8 @@ public final class PvpBotCommands {
     /** Config に保存された設定をプレイヤーの FightSession へ適用。 */
     private static void applyConfigToSession(ServerPlayer player) {
         FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
-        session.enemyArmorTier = Config.ARMOR_TIER.getAsInt();
-        session.playerArmorTier = Config.ARMOR_TIER.getAsInt();
+        session.enemyArmorTier = Config.ENEMY_ARMOR_TIER.getAsInt();
+        session.playerArmorTier = Config.PLAYER_ARMOR_TIER.getAsInt();
         session.boxingMode = Config.BOXING_MODE.getAsInt();
         session.enemyStrengthTier = Config.STRENGTH_TIER.getAsInt();
     }

@@ -12,12 +12,14 @@ import net.minecraft.network.chat.Component;
  */
 public class PvpBotSettingsScreen extends Screen {
 
-    private int armorTier;
+    private int enemyArmorTier;
+    private int playerArmorTier;
     private int boxingMode;
 
     public PvpBotSettingsScreen() {
         super(Component.translatable("pvpbot.screen.title"));
-        this.armorTier = ClientSettings.getArmorTier();
+        this.enemyArmorTier = ClientSettings.getEnemyArmorTier();
+        this.playerArmorTier = ClientSettings.getPlayerArmorTier();
         this.boxingMode = ClientSettings.getBoxingMode();
     }
 
@@ -26,18 +28,25 @@ public class PvpBotSettingsScreen extends Screen {
         int centerX = this.width / 2;
         int y = this.height / 2 - 70;
 
-        // サーバー側セッションにも現在の記憶値を同期
-        sendCommand("pvpbot armor " + armorTier);
-        sendCommand("pvpbot boxing " + boxingMode);
-
-        addRenderableWidget(Button.builder(armorLabel(), b -> {
-            armorTier = (armorTier + 1) % 4;
-            ClientSettings.setArmorTier(armorTier);
-            b.setMessage(armorLabel());
-            sendCommand("pvpbot armor " + armorTier);
+        // 敵の防具設定ボタン
+        addRenderableWidget(Button.builder(enemyArmorLabel(), b -> {
+            enemyArmorTier = (enemyArmorTier + 1) % 4;
+            ClientSettings.setEnemyArmorTier(enemyArmorTier);
+            b.setMessage(enemyArmorLabel());
+            sendCommand("pvpbot armor enemy " + enemyArmorTier);
         }).bounds(centerX - 100, y, 200, 20).build());
 
         y += 24;
+        // プレイヤーの防具設定ボタン
+        addRenderableWidget(Button.builder(playerArmorLabel(), b -> {
+            playerArmorTier = (playerArmorTier + 1) % 4;
+            ClientSettings.setPlayerArmorTier(playerArmorTier);
+            b.setMessage(playerArmorLabel());
+            sendCommand("pvpbot armor player " + playerArmorTier);
+        }).bounds(centerX - 100, y, 200, 20).build());
+
+        y += 24;
+        // ボクシングモード設定ボタン
         addRenderableWidget(Button.builder(boxingLabel(), b -> {
             boxingMode = (boxingMode + 1) % 5;
             ClientSettings.setBoxingMode(boxingMode);
@@ -46,31 +55,45 @@ public class PvpBotSettingsScreen extends Screen {
         }).bounds(centerX - 100, y, 200, 20).build());
 
         y += 28;
+        // ステータス確認ボタン
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.status"), b -> {
             sendCommand("pvpbot status");
         }).bounds(centerX - 100, y, 200, 20).build());
 
         y += 28;
+        // 開始ボタン
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.start"), b -> {
-            sendCommand("pvpbot armor " + armorTier);
+            sendCommand("pvpbot armor enemy " + enemyArmorTier);
+            sendCommand("pvpbot armor player " + playerArmorTier);
             sendCommand("pvpbot boxing " + boxingMode);
             sendCommand("pvpbot start");
             onClose();
         }).bounds(centerX - 100, y, 200, 20).build());
 
         y += 24;
+        // 閉じるボタン
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.close"), b -> onClose())
                 .bounds(centerX - 100, y, 200, 20).build());
     }
 
-    private Component armorLabel() {
-        String key = switch (armorTier) {
+    private Component enemyArmorLabel() {
+        String key = switch (enemyArmorTier) {
             case 0 -> "pvpbot.screen.armor.leather";
             case 1 -> "pvpbot.screen.armor.iron";
             case 3 -> "pvpbot.screen.armor.netherite";
             default -> "pvpbot.screen.armor.diamond";
         };
-        return Component.translatable("pvpbot.screen.armor", Component.translatable(key));
+        return Component.translatable("pvpbot.screen.enemy.armor", Component.translatable(key));
+    }
+
+    private Component playerArmorLabel() {
+        String key = switch (playerArmorTier) {
+            case 0 -> "pvpbot.screen.armor.leather";
+            case 1 -> "pvpbot.screen.armor.iron";
+            case 3 -> "pvpbot.screen.armor.netherite";
+            default -> "pvpbot.screen.armor.diamond";
+        };
+        return Component.translatable("pvpbot.screen.player.armor", Component.translatable(key));
     }
 
     private Component boxingLabel() {

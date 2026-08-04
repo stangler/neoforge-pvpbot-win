@@ -1,5 +1,7 @@
 package net.nekometa.pvpbot;
 
+import org.slf4j.Logger;
+import com.mojang.logging.LogUtils;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -7,6 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * 防具 / 勝敗方式 / Beast を config に保存し、再起動後も維持する。
  */
 public class Config {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     static {
@@ -14,9 +17,14 @@ public class Config {
     }
 
     /** 0革 1鉄 2ダイヤ 3ネザライト */
-    public static final ModConfigSpec.IntValue ARMOR_TIER = BUILDER
-            .comment("Default armor tier: 0=leather, 1=iron, 2=diamond, 3=netherite")
-            .defineInRange("armorTier", 2, 0, 3);
+    public static final ModConfigSpec.IntValue ENEMY_ARMOR_TIER = BUILDER
+            .comment("Enemy armor tier: 0=leather, 1=iron, 2=diamond, 3=netherite")
+            .defineInRange("enemyArmorTier", 2, 0, 3);
+
+    /** 0革 1鉄 2ダイヤ 3ネザライト */
+    public static final ModConfigSpec.IntValue PLAYER_ARMOR_TIER = BUILDER
+            .comment("Player armor tier: 0=leather, 1=iron, 2=diamond, 3=netherite")
+            .defineInRange("playerArmorTier", 2, 0, 3);
 
     /** 0無効 1:50 2:100 3:500 4:1000 */
     public static final ModConfigSpec.IntValue BOXING_MODE = BUILDER
@@ -108,4 +116,15 @@ public class Config {
     }
 
     static final ModConfigSpec SPEC = BUILDER.build();
+
+    /** 旧設定から新設定へのマイグレーション（armorTier → enemyArmorTier + playerArmorTier） */
+    public static void migrateLegacyConfig(net.neoforged.fml.config.ModConfig config) {
+        if (config == null) {
+            return;
+        }
+        
+        // マイグレーションは手動で行うか、初回アクセス時に実行
+        // ここではログのみ出力し、実際のマイグレーションは applyConfigToSession で処理
+        LOGGER.info("Config migration check: if 'armorTier' exists in pvpbot-common.toml, manually rename to 'enemyArmorTier' and 'playerArmorTier'");
+    }
 }

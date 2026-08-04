@@ -97,8 +97,9 @@ public class PvPBotMod {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("PvP Bot defaults: armor={}, boxing={}",
-                Config.ARMOR_TIER.getAsInt(),
+        LOGGER.info("PvP Bot defaults: enemyArmor={}, playerArmor={}, boxing={}",
+                Config.ENEMY_ARMOR_TIER.getAsInt(),
+                Config.PLAYER_ARMOR_TIER.getAsInt(),
                 Config.BOXING_MODE.getAsInt());
     }
 
