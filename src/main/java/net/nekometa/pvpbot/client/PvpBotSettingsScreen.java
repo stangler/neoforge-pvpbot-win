@@ -1,16 +1,31 @@
 package net.nekometa.pvpbot.client;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 元データパックの看板UI(data/sign/function/*)の移植先GUI。
  *
  * 設定は ClientSettings / Config に記憶され、再表示・再起動後も維持される。
  * サーバー側には既存の /pvpbot コマンドで反映する（新規ネットワーク不要）。
+ *
+ * レイアウト: 設定ボタンは左右2列（旧3列から変更）。
+ * ウィンドウが低い場合に備え、2列部分はマウスホイールで縦スクロール可能。
+ * ステータス確認/開始/閉じるの下段ボタンはスクロールの影響を受けない固定位置。
  */
 public class PvpBotSettingsScreen extends Screen {
+
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 20;
+    private static final int ROW_HEIGHT = 24;
+    private static final int VISIBLE_ROWS = 6; // スクロールviewportに一度に表示する行数
+    private static final int COLUMN_GAP = 20;
 
     private int enemyArmorTier;
     private int playerArmorTier;
@@ -27,6 +42,17 @@ public class PvpBotSettingsScreen extends Screen {
     private double aiChaseSpeed;
     private double aiErraticChance;
     private double aiRandomDodgeChance;
+
+    // スクロール対応の設定ボタン群（下段の固定ボタンとは別管理）
+    private final List<AbstractWidget> configWidgets = new ArrayList<>();
+    private final List<Integer> configBaseY = new ArrayList<>();
+    private int scrollOffset = 0;
+    private int maxScroll = 0;
+
+    private int listX1;
+    private int listX2;
+    private int listTop;
+    private int listBottom;
 
     public PvpBotSettingsScreen() {
         super(Component.translatable("pvpbot.screen.title"));
@@ -49,145 +75,113 @@ public class PvpBotSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        int centerX = this.width / 2;
-        int y = this.height / 2 - 90;
-        int leftX = centerX - 105;
-        int rightX = centerX + 5;
+        configWidgets.clear();
+        configBaseY.clear();
+        scrollOffset = 0;
 
-        // 左列: 既存の設定
-        // 敵の防具設定ボタン
-        addRenderableWidget(Button.builder(enemyArmorLabel(), b -> {
+        int centerX = this.width / 2;
+        int centerY = this.height / 2;
+        int leftX = centerX - 210;
+        int midX = leftX + BUTTON_WIDTH + COLUMN_GAP; // = centerX + 10 (旧midXと同一)
+
+        listTop = centerY - 90;
+        int viewportHeight = VISIBLE_ROWS * ROW_HEIGHT;
+        listBottom = listTop + viewportHeight;
+        listX1 = leftX - 4;
+        listX2 = midX + BUTTON_WIDTH + 4;
+
+        // 左列(col1): 戦闘設定 + アリーナ設定の一部 (8ボタン)
+        int col1Row = 0;
+        addConfigButton(leftX, col1Row++, enemyArmorLabel(), b -> {
             enemyArmorTier = (enemyArmorTier + 1) % 4;
             ClientSettings.setEnemyArmorTier(enemyArmorTier);
             b.setMessage(enemyArmorLabel());
             sendCommand("pvpbot armor enemy " + enemyArmorTier);
-        }).bounds(leftX, y, 200, 20).build());
-
-        y += 24;
-        // プレイヤーの防具設定ボタン
-        addRenderableWidget(Button.builder(playerArmorLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, playerArmorLabel(), b -> {
             playerArmorTier = (playerArmorTier + 1) % 4;
             ClientSettings.setPlayerArmorTier(playerArmorTier);
             b.setMessage(playerArmorLabel());
             sendCommand("pvpbot armor player " + playerArmorTier);
-        }).bounds(leftX, y, 200, 20).build());
-
-        y += 24;
-        // ボクシングモード設定ボタン
-        addRenderableWidget(Button.builder(boxingLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, boxingLabel(), b -> {
             boxingMode = (boxingMode + 1) % 5;
             ClientSettings.setBoxingMode(boxingMode);
             b.setMessage(boxingLabel());
             sendCommand("pvpbot boxing " + boxingMode);
-        }).bounds(leftX, y, 200, 20).build());
-
-        y += 24;
-        // 敵の強さ設定ボタン
-        addRenderableWidget(Button.builder(strengthLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, strengthLabel(), b -> {
             strengthTier = (strengthTier + 1) % 5;
             ClientSettings.setStrengthTier(strengthTier);
             b.setMessage(strengthLabel());
             sendCommand("pvpbot strength " + strengthTier);
-        }).bounds(leftX, y, 200, 20).build());
-
-        y += 24;
-        // プレイヤー速度設定ボタン
-        addRenderableWidget(Button.builder(playerSpeedLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, playerSpeedLabel(), b -> {
             playerSpeedAmplifier = (playerSpeedAmplifier + 1) % 10;
             ClientSettings.setPlayerSpeedAmplifier(playerSpeedAmplifier);
             b.setMessage(playerSpeedLabel());
-        }).bounds(leftX, y, 200, 20).build());
-
-        y += 24;
-        // ボット速度設定ボタン
-        addRenderableWidget(Button.builder(botSpeedLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, botSpeedLabel(), b -> {
             botSpeedAmplifier = (botSpeedAmplifier + 1) % 10;
             ClientSettings.setBotSpeedAmplifier(botSpeedAmplifier);
             b.setMessage(botSpeedLabel());
-        }).bounds(leftX, y, 200, 20).build());
-
-        // 右列: アリーナ設定
-        y = this.height / 2 - 90;
-        // アリーナ高さ設定ボタン
-        addRenderableWidget(Button.builder(arenaYLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, arenaYLabel(), b -> {
             arenaY = cycleInt(arenaY, -64, 2032, 16);
             ClientSettings.setArenaY(arenaY);
             b.setMessage(arenaYLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // アリーナ半径設定ボタン
-        addRenderableWidget(Button.builder(arenaRadiusLabel(), b -> {
+        });
+        addConfigButton(leftX, col1Row++, arenaRadiusLabel(), b -> {
             arenaRadius = cycleInt(arenaRadius, 4, 64, 2);
             ClientSettings.setArenaRadius(arenaRadius);
             b.setMessage(arenaRadiusLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        });
 
-        y += 24;
-        // 壁の高さ設定ボタン
-        addRenderableWidget(Button.builder(arenaWallHeightLabel(), b -> {
+        // 右列(col2): アリーナ設定の残り + AI設定 (7ボタン)
+        int col2Row = 0;
+        addConfigButton(midX, col2Row++, arenaWallHeightLabel(), b -> {
             arenaWallHeight = cycleInt(arenaWallHeight, 3, 12, 1);
             ClientSettings.setArenaWallHeight(arenaWallHeight);
             b.setMessage(arenaWallHeightLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // ボット配置距離設定ボタン
-        addRenderableWidget(Button.builder(botOffsetZLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, botOffsetZLabel(), b -> {
             botOffsetZ = cycleDouble(botOffsetZ, 2.0, 32.0, 1.0);
             ClientSettings.setBotOffsetZ(botOffsetZ);
             b.setMessage(botOffsetZLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // 奈落落下マージン設定ボタン
-        addRenderableWidget(Button.builder(voidFallMarginLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, voidFallMarginLabel(), b -> {
             voidFallMargin = cycleDouble(voidFallMargin, 1.0, 64.0, 2.0);
             ClientSettings.setVoidFallMargin(voidFallMargin);
             b.setMessage(voidFallMarginLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // AI設定セクション
-        // AI ストレーフ速度設定ボタン
-        addRenderableWidget(Button.builder(aiStrafeSpeedLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, aiStrafeSpeedLabel(), b -> {
             aiStrafeSpeed = cycleDouble(aiStrafeSpeed, 5, 80, 5);
             ClientSettings.setAiStrafeSpeed(aiStrafeSpeed / 100);
             b.setMessage(aiStrafeSpeedLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // AI チェイス速度設定ボタン
-        addRenderableWidget(Button.builder(aiChaseSpeedLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, aiChaseSpeedLabel(), b -> {
             aiChaseSpeed = cycleDouble(aiChaseSpeed, 0, 90, 5);
             ClientSettings.setAiChaseSpeed(aiChaseSpeed / 100);
             b.setMessage(aiChaseSpeedLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // AI 不規則行動確率設定ボタン
-        addRenderableWidget(Button.builder(aiErraticChanceLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, aiErraticChanceLabel(), b -> {
             aiErraticChance = cycleDouble(aiErraticChance, 0, 80, 5);
             ClientSettings.setAiErraticChance(aiErraticChance / 100);
             b.setMessage(aiErraticChanceLabel());
-        }).bounds(rightX, y, 200, 20).build());
-
-        y += 24;
-        // AI ランダム回避確率設定ボタン
-        addRenderableWidget(Button.builder(aiRandomDodgeChanceLabel(), b -> {
+        });
+        addConfigButton(midX, col2Row++, aiRandomDodgeChanceLabel(), b -> {
             aiRandomDodgeChance = cycleDouble(aiRandomDodgeChance, 0, 80, 5);
             ClientSettings.setAiRandomDodgeChance(aiRandomDodgeChance / 100);
             b.setMessage(aiRandomDodgeChanceLabel());
-        }).bounds(rightX, y, 200, 20).build());
+        });
 
-        y += 28;
-        // ステータス確認ボタン
-        addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.status"), b -> {
-            sendCommand("pvpbot status");
-        }).bounds(centerX - 100, y, 200, 20).build());
+        int maxRows = Math.max(col1Row, col2Row);
+        int contentHeight = maxRows * ROW_HEIGHT;
+        maxScroll = Math.max(0, contentHeight - viewportHeight);
+        repositionConfigWidgets();
 
-        y += 28;
-        // 開始ボタン
+        // 下段: 開始・閉じるボタン（スクロールの影響を受けない固定位置）
+        int y = listBottom + 16;
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.start"), b -> {
             sendCommand("pvpbot armor enemy " + enemyArmorTier);
             sendCommand("pvpbot armor player " + playerArmorTier);
@@ -195,12 +189,58 @@ public class PvpBotSettingsScreen extends Screen {
             sendCommand("pvpbot strength " + strengthTier);
             sendCommand("pvpbot start");
             onClose();
-        }).bounds(centerX - 100, y, 200, 20).build());
+        }).bounds(centerX - 100, y, BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
         y += 24;
-        // 閉じるボタン
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.close"), b -> onClose())
-                .bounds(centerX - 100, y, 200, 20).build());
+                .bounds(centerX - 100, y, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+    }
+
+    /**
+     * スクロール対象の設定ボタンを追加する。addRenderableWidget ではなく addWidget を使うことで
+     * クリック判定(children)には含めつつ、自動描画(renderables)からは除外し、
+     * render() 内で手動＋シザー(clip)描画する。
+     */
+    private void addConfigButton(int x, int row, Component label, Button.OnPress onPress) {
+        int baseY = listTop + row * ROW_HEIGHT;
+        Button button = Button.builder(label, onPress).bounds(x, baseY, BUTTON_WIDTH, BUTTON_HEIGHT).build();
+        addWidget(button);
+        configWidgets.add(button);
+        configBaseY.add(baseY);
+    }
+
+    private void repositionConfigWidgets() {
+        for (int i = 0; i < configWidgets.size(); i++) {
+            AbstractWidget w = configWidgets.get(i);
+            int baseY = configBaseY.get(i);
+            int newY = baseY - scrollOffset;
+            w.setY(newY);
+            // viewport外に完全に出ているボタンはクリック判定を無効化（境界での誤クリック防止）
+            w.active = (newY + BUTTON_HEIGHT > listTop) && (newY < listBottom);
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (maxScroll > 0 && mouseX >= listX1 && mouseX <= listX2 && mouseY >= listTop && mouseY <= listBottom) {
+            scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int) (scrollY * (ROW_HEIGHT / 2.0))));
+            repositionConfigWidgets();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+        // 背景 + 下段の固定ボタン(renderables)は通常描画
+        super.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+
+        // スクロール対象の設定ボタンはシザーでクリップして手動描画
+        guiGraphicsExtractor.enableScissor(listX1, listTop, listX2, listBottom);
+        for (AbstractWidget w : configWidgets) {
+            w.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+        }
+        guiGraphicsExtractor.disableScissor();
     }
 
     private Component enemyArmorLabel() {
@@ -286,6 +326,25 @@ public class PvpBotSettingsScreen extends Screen {
         double next = current + step;
         if (next > max) {
             return min;
+        }
+        return next;
+    }
+
+    // 未使用メソッドの警告を抑制（将来の拡張用）
+    @SuppressWarnings("unused")
+    private int cycleIntDecrease(int current, int min, int max, int step) {
+        int next = current - step;
+        if (next < min) {
+            return max;
+        }
+        return next;
+    }
+
+    @SuppressWarnings("unused")
+    private double cycleDoubleDecrease(double current, double min, double max, double step) {
+        double next = current - step;
+        if (next < min) {
+            return max;
         }
         return next;
     }

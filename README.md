@@ -11,6 +11,7 @@ Minecraft 26.1.2 / NeoForge 26.1.2 向けの練習用PvPボットモッドです
 - 防具ティア、勝敗方式（死亡 / ヒット数先取）、敵の強さを `/pvpbot` コマンドまたはGUIで設定
 - **アリーナ設定**: 高さ、半径、壁の高さ、ボットとの距離、奈落マージンをGUIで調整可能
 - **AI設定**: ストレーフ速度、チェイス速度、不規則行動確率、回避確率をGUIで調整可能
+- 設定GUI（`/pvpbot menu`）は2列レイアウト＋マウスホイールでの縦スクロールに対応。下段の「開始」「閉じる」ボタンはスクロールに関わらず常に固定表示
 - ボットはストレーフ、WTAP、ジャンプリセット、クリットを組み合わせた攻撃的なAIで動作
   - プレイヤーとの距離に応じて加速し、近接時でも小刻みに動いて照準を外させる
   - `pvpbot-common.toml` の `ai.*` / `botBaseMovementSpeed` / `botSpeedAmplifier` で俊敏さを調整可能
@@ -50,6 +51,8 @@ VS Code の `.vscode/launch.json` から Client / Server / Data / GameTestServer
 | `/pvpbot boxing <0-4>` | 勝敗方式（0=死亡, 1=50, 2=100, 3=500, 4=1000ヒット） |
 | `/pvpbot strength <0-4>` | 敵の強さ（0=弱, 1=易, 2=普通, 3=強, 4=激強） |
 | `/pvpbot hitsdebug <count>` | ヒット数決着の閾値を一時変更（検証用） |
+
+> `/pvpbot status` は設定GUI（`/pvpbot menu`）からは削除済みです。現在の設定を確認したい場合はコマンドを直接実行してください。
 
 ## ボットの動きを調整する
 
