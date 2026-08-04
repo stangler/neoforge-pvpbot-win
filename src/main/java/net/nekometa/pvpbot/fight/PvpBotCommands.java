@@ -186,7 +186,7 @@ public final class PvpBotCommands {
         session.arenaWallHeight = Config.ARENA_WALL_HEIGHT.getAsInt();
         session.botOffsetZ = Config.BOT_OFFSET_Z.getAsDouble();
         session.voidFallMargin = Config.VOID_FALL_MARGIN.getAsDouble();
-        // AI設定
+        // ボット行動設定
         session.aiStrafeSpeed = Config.AI_STRAFE_SPEED.getAsDouble();
         session.aiChaseSpeed = Config.AI_CHASE_SPEED.getAsDouble();
         session.aiErraticChance = Config.AI_ERRATIC_CHANCE.getAsDouble();

@@ -137,7 +137,7 @@ public class PvpBotSettingsScreen extends Screen {
             b.setMessage(arenaRadiusLabel());
         });
 
-        // 右列(col2): アリーナ設定の残り + AI設定 (7ボタン)
+        // 右列(col2): アリーナ設定の残り + ボット行動設定 (7ボタン)
         int col2Row = 0;
         addConfigButton(midX, col2Row++, arenaWallHeightLabel(), b -> {
             arenaWallHeight = cycleInt(arenaWallHeight, 3, 12, 1);
