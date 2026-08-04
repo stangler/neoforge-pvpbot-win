@@ -67,4 +67,26 @@ public class FightSession {
 
     /** 検証用: 0以外なら上記固定値を無視してこの数値をヒット閾値として使う。 */
     public int hitThresholdOverride = 0;
+
+    // --- アリーナ設定（GUI/Configから反映） ---
+    /** アリーナ床の高さ */
+    public int arenaY = 200;
+    /** アリーナ半径 */
+    public int arenaRadius = 12;
+    /** 壁の高さ */
+    public int arenaWallHeight = 5;
+    /** ボット配置距離（Zオフセット） */
+    public double botOffsetZ = 8.0D;
+    /** 奈落落下マージン */
+    public double voidFallMargin = 10.0D;
+
+    // --- AI設定（GUI/Configから反映） ---
+    /** AI ストレーフ速度 */
+    public double aiStrafeSpeed = 0.35D;
+    /** AI チェイス速度 */
+    public double aiChaseSpeed = 0.35D;
+    /** AI 不規則行動確率 */
+    public double aiErraticChance = 0.18D;
+    /** AI ランダム回避確率 */
+    public double aiRandomDodgeChance = 0.15D;
 }
