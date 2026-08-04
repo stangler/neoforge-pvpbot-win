@@ -148,6 +148,24 @@ public final class PvpBotCommands {
         giveMenu(player);
     }
 
+    /**
+     * リスポート時に /pvpbot menu を自動実行する。
+     * PlayerLoggedInEvent は初回ログイン時のみ発火するため、死亡後のリスポートはこれで拾う。
+     */
+    @SubscribeEvent
+    public static void onPlayerRespawn(net.neoforged.neoforge.event.entity.player.PlayerEvent.Clone event) {
+        if (!event.isWasDeath()) {
+            return;
+        }
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (hasMenuItem(player)) {
+            return;
+        }
+        giveMenu(player);
+    }
+
     /** インベントリ内に既にメニューアイテムを持っているかを確認する。 */
     private static boolean hasMenuItem(ServerPlayer player) {
         var inventory = player.getInventory();
