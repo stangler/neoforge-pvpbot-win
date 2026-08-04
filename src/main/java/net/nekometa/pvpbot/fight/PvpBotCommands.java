@@ -180,5 +180,16 @@ public final class PvpBotCommands {
         session.playerArmorTier = Config.PLAYER_ARMOR_TIER.getAsInt();
         session.boxingMode = Config.BOXING_MODE.getAsInt();
         session.enemyStrengthTier = Config.STRENGTH_TIER.getAsInt();
+        // アリーナ設定
+        session.arenaY = Config.ARENA_Y.getAsInt();
+        session.arenaRadius = Config.ARENA_RADIUS.getAsInt();
+        session.arenaWallHeight = Config.ARENA_WALL_HEIGHT.getAsInt();
+        session.botOffsetZ = Config.BOT_OFFSET_Z.getAsDouble();
+        session.voidFallMargin = Config.VOID_FALL_MARGIN.getAsDouble();
+        // AI設定
+        session.aiStrafeSpeed = Config.AI_STRAFE_SPEED.getAsDouble();
+        session.aiChaseSpeed = Config.AI_CHASE_SPEED.getAsDouble();
+        session.aiErraticChance = Config.AI_ERRATIC_CHANCE.getAsDouble();
+        session.aiRandomDodgeChance = Config.AI_RANDOM_DODGE_CHANCE.getAsDouble();
     }
 }
