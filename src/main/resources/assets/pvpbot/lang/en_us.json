@@ -26,7 +26,6 @@
   "pvpbot.screen.speed.none": "None",
   "pvpbot.screen.start": "Start Fight",
   "pvpbot.screen.close": "Close",
-  "pvpbot.screen.status": "Show current settings",
   "pvpbot.screen.summary": "Saved: Armor=%s / Win=%s",
   "pvpbot.screen.arena.y": "Arena Height: %s",
   "pvpbot.screen.arena.radius": "Arena Radius: %s",
@@ -54,6 +53,5 @@
   "pvpbot.cmd.boxing": "boxingMode=%s",
   "pvpbot.cmd.strength": "strengthTier=%s",
   "pvpbot.cmd.hitsdebug": "hitThresholdOverride=%s",
-  "pvpbot.cmd.menu_given": "Gave PvP Bot settings item",
-  "pvpbot.cmd.status": "[PvP Bot] Armor=%s / Win=%s / Strength=%s / State=%s"
+  "pvpbot.cmd.menu_given": "Gave PvP Bot settings item"
 }

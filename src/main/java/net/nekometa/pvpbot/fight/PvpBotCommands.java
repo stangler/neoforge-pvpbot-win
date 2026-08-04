@@ -27,7 +27,6 @@ public final class PvpBotCommands {
                 Commands.literal("pvpbot")
                         .then(Commands.literal("start").executes(PvpBotCommands::executeStart))
                         .then(Commands.literal("quit").executes(PvpBotCommands::executeQuit))
-                        .then(Commands.literal("status").executes(PvpBotCommands::executeStatus))
                         .then(Commands.literal("armor")
                                 .then(Commands.argument("tier", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3))
                                         .executes(PvpBotCommands::executeArmor))
@@ -108,39 +107,6 @@ public final class PvpBotCommands {
         return 1;
     }
 
-    /** 現在のサーバー側設定を表示（看板の常時確認相当）。 */
-    private static int executeStatus(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        ServerPlayer player = ctx.getSource().getPlayerOrException();
-        FightSession session = player.getData(FightAttachments.FIGHT_SESSION.get());
-        String armor = switch (session.enemyArmorTier) {
-            case 0 -> "革";
-            case 1 -> "鉄";
-            case 3 -> "ネザライト";
-            default -> "ダイヤ";
-        };
-        String boxing = switch (session.boxingMode) {
-            case 1 -> "50ヒット";
-            case 2 -> "100ヒット";
-            case 3 -> "500ヒット";
-            case 4 -> "1000ヒット";
-            default -> "無効(死亡)";
-        };
-        String strength = switch (session.enemyStrengthTier) {
-            case 0 -> "弱";
-            case 1 -> "易";
-            case 3 -> "強";
-            case 4 -> "激強";
-            default -> "普通";
-        };
-        player.sendSystemMessage(Component.translatable(
-                "pvpbot.cmd.status",
-                armor,
-                boxing,
-                strength,
-                session.state.name()));
-        return 1;
-    }
-
     private static int executeHitsDebug(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
         int count = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "count");
@@ -152,12 +118,45 @@ public final class PvpBotCommands {
 
     private static int executeMenu(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
-        // Config の記憶値をセッションへ反映してからメニュー付与
+        giveMenu(player);
+        return 1;
+    }
+
+    /**
+     * /pvpbot menu 相当の処理本体。ワールド参加時の自動実行(onPlayerLoggedIn)からも呼ぶ。
+     * Config の記憶値をセッションへ反映してからメニューアイテムを付与する。
+     */
+    static void giveMenu(ServerPlayer player) {
         applyConfigToSession(player);
         player.getInventory().add(new net.minecraft.world.item.ItemStack(
                 net.nekometa.pvpbot.PvPBotMod.PVPBOT_MENU_ITEM.get()));
         player.sendSystemMessage(Component.translatable("pvpbot.cmd.menu_given"));
-        return 1;
+    }
+
+    /**
+     * ワールド参加時に /pvpbot menu を自動実行する（毎回コマンドを打つ手間を省く）。
+     * 既にインベントリにメニューアイテムを持っている場合は重複付与しない。
+     */
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (hasMenuItem(player)) {
+            return;
+        }
+        giveMenu(player);
+    }
+
+    /** インベントリ内に既にメニューアイテムを持っているかを確認する。 */
+    private static boolean hasMenuItem(ServerPlayer player) {
+        var inventory = player.getInventory();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            if (inventory.getItem(i).is(net.nekometa.pvpbot.PvPBotMod.PVPBOT_MENU_ITEM.get())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static int executeStart(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

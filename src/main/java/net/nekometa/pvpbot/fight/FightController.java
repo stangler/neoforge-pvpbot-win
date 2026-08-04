@@ -442,13 +442,7 @@ public final class FightController {
         }
 
         // code:hitrace: %boxing sign が有効な場合、死亡ではなくヒット数先取で決着。
-        int hitThreshold = session.hitThresholdOverride > 0 ? session.hitThresholdOverride : switch (session.boxingMode) {
-            case 1 -> 50;
-            case 2 -> 100;
-            case 3 -> 500;
-            case 4 -> 1000;
-            default -> 0; // 0: 無効
-        };
+        int hitThreshold = session.hitThreshold();
         if (hitThreshold > 0) {
             if (session.playerHits >= hitThreshold) {
                 session.state = FightState.WIN;
@@ -527,6 +521,9 @@ public final class FightController {
             session.returnGameMode = null;
             session.state = FightState.IDLE;
             session.finalTimer = 0;
+
+            // 終了後（リスポーン含む）もメニューが手元にある状態を保つ
+            PvpBotCommands.giveMenu(player);
         }
     }
 

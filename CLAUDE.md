@@ -64,7 +64,7 @@ net.nekometa.pvpbot
 │   ├── FightAttachments.java    # NeoForge DataAttachment (FightSession)
 │   ├── BotSpawner.java          # code:spawn — Zombieボット生成・属性設定
 │   ├── ArmorSets.java           # 防具セット適用 (革/鉄/ダイヤ/ネザライト + BeastGear)
-│   └── PvpBotCommands.java      # /pvpbot {start,quit,status,beast,armor,boxing,strength,hitsdebug,menu}
+│   └── PvpBotCommands.java      # /pvpbot {start,quit,beast,armor,boxing,strength,hitsdebug,menu}（menuはログイン時にも自動実行）
 │
 ├── ai/                          # ボットAI(サーバー側)
 │   ├── PvpBotAiEvents.java      # コアメイン: ストレーフ/WTAP/ジャンプリセット/クリット

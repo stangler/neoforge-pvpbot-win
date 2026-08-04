@@ -68,6 +68,23 @@ public class FightSession {
     /** 検証用: 0以外なら上記固定値を無視してこの数値をヒット閾値として使う。 */
     public int hitThresholdOverride = 0;
 
+    /**
+     * 現在の設定から有効なヒット数閾値を返す。0以下なら無効(死亡で決着)。
+     * FightController(決着判定)とPvpBotAiEvents(死亡防止)の両方から参照する。
+     */
+    public int hitThreshold() {
+        if (hitThresholdOverride > 0) {
+            return hitThresholdOverride;
+        }
+        return switch (boxingMode) {
+            case 1 -> 50;
+            case 2 -> 100;
+            case 3 -> 500;
+            case 4 -> 1000;
+            default -> 0;
+        };
+    }
+
     // --- アリーナ設定（GUI/Configから反映） ---
     /** アリーナ床の高さ */
     public int arenaY = 200;

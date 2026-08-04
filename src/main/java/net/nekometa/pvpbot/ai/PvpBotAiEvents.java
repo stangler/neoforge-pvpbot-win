@@ -14,6 +14,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.nekometa.pvpbot.fight.FightAttachments;
+import net.nekometa.pvpbot.fight.FightSession;
 
 /**
  * 元データパック `data/ai/function/*.mcfunction` の移植。
@@ -324,19 +326,33 @@ public final class PvpBotAiEvents {
         LivingEntity victim = event.getEntity();
         DamageSource source = event.getSource();
 
-        if (isBot(victim) && source.getEntity() instanceof Player) {
-            onBotHurtByPlayer(victim);
+        if (isBot(victim) && source.getEntity() instanceof Player player) {
+            onBotHurtByPlayer(victim, player);
         } else if (victim instanceof ServerPlayer player && isBot(source.getEntity())) {
             onPlayerHurtByBot(player, (LivingEntity) source.getEntity());
         }
     }
 
-    /** code:bothurt: プレイヤーがボットを殴った瞬間の処理。 */
-    private static void onBotHurtByPlayer(LivingEntity bot) {
+    /**
+     * code:bothurt: プレイヤーがボットを殴った瞬間の処理。
+     *
+     * boxing(ヒット数先取)モードが有効な場合、閾値到達前に通常ダメージで
+     * ボットが実際に死亡してしまうと決着判定(FightController.tickFighting)が
+     * 動く前に討伐扱いになってしまうため、HPが0以下になったら1へ戻して
+     * 死亡させない。閾値到達判定自体はFightController側のヒット数カウントで行う。
+     */
+    private static void onBotHurtByPlayer(LivingEntity bot, Player player) {
         BotAiState state = bot.getData(BotAiAttachments.BOT_AI_STATE.get());
         state.hitCount++;
         if (state.jumpResetActive) {
             state.jumpResetHitCount++;
+        }
+
+        if (player instanceof ServerPlayer serverPlayer && bot.getHealth() <= 0.0F) {
+            FightSession session = serverPlayer.getData(FightAttachments.FIGHT_SESSION.get());
+            if (session.hitThreshold() > 0) {
+                bot.setHealth(1.0F);
+            }
         }
     }
 

@@ -26,7 +26,6 @@
   "pvpbot.screen.speed.none": "なし",
   "pvpbot.screen.start": "戦闘開始",
   "pvpbot.screen.close": "閉じる",
-  "pvpbot.screen.status": "現在の設定を確認",
   "pvpbot.screen.summary": "記憶中: 防具=%s / 勝敗=%s",
   "pvpbot.screen.arena.y": "アリーナ高さ: %s",
   "pvpbot.screen.arena.radius": "アリーナ半径: %s",
@@ -54,6 +53,5 @@
   "pvpbot.cmd.boxing": "勝敗方式: %s",
   "pvpbot.cmd.strength": "敵の強さ: %s",
   "pvpbot.cmd.hitsdebug": "ヒット決着数（検証用）: %s",
-  "pvpbot.cmd.menu_given": "設定メニューアイテムを付与しました",
-  "pvpbot.cmd.status": "【PvP Bot】防具=%s / 勝敗=%s / 強さ=%s / 状態=%s"
+  "pvpbot.cmd.menu_given": "設定メニューアイテムを付与しました"
 }
