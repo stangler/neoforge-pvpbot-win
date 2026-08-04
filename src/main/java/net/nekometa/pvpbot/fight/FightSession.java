@@ -80,13 +80,13 @@ public class FightSession {
     /** 奈落落下マージン */
     public double voidFallMargin = 10.0D;
 
-    // --- AI設定（GUI/Configから反映） ---
-    /** AI ストレーフ速度 */
+    // --- ボット行動設定（GUI/Configから反映） ---
+    /** ストレーフ速度 */
     public double aiStrafeSpeed = 0.35D;
-    /** AI チェイス速度 */
+    /** チェイス速度 */
     public double aiChaseSpeed = 0.35D;
-    /** AI 不規則行動確率 */
+    /** 不規則行動確率 */
     public double aiErraticChance = 0.18D;
-    /** AI ランダム回避確率 */
+    /** ランダム回避確率 */
     public double aiRandomDodgeChance = 0.15D;
 }
