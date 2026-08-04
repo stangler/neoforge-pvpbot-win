@@ -15,18 +15,24 @@ public class PvpBotSettingsScreen extends Screen {
     private int enemyArmorTier;
     private int playerArmorTier;
     private int boxingMode;
+    private int strengthTier;
+    private int playerSpeedAmplifier;
+    private int botSpeedAmplifier;
 
     public PvpBotSettingsScreen() {
         super(Component.translatable("pvpbot.screen.title"));
         this.enemyArmorTier = ClientSettings.getEnemyArmorTier();
         this.playerArmorTier = ClientSettings.getPlayerArmorTier();
         this.boxingMode = ClientSettings.getBoxingMode();
+        this.strengthTier = ClientSettings.getStrengthTier();
+        this.playerSpeedAmplifier = ClientSettings.getPlayerSpeedAmplifier();
+        this.botSpeedAmplifier = ClientSettings.getBotSpeedAmplifier();
     }
 
     @Override
     protected void init() {
         int centerX = this.width / 2;
-        int y = this.height / 2 - 70;
+        int y = this.height / 2 - 90;
 
         // 敵の防具設定ボタン
         addRenderableWidget(Button.builder(enemyArmorLabel(), b -> {
@@ -54,6 +60,31 @@ public class PvpBotSettingsScreen extends Screen {
             sendCommand("pvpbot boxing " + boxingMode);
         }).bounds(centerX - 100, y, 200, 20).build());
 
+        y += 24;
+        // 敵の強さ設定ボタン
+        addRenderableWidget(Button.builder(strengthLabel(), b -> {
+            strengthTier = (strengthTier + 1) % 5;
+            ClientSettings.setStrengthTier(strengthTier);
+            b.setMessage(strengthLabel());
+            sendCommand("pvpbot strength " + strengthTier);
+        }).bounds(centerX - 100, y, 200, 20).build());
+
+        y += 24;
+        // プレイヤー速度設定ボタン
+        addRenderableWidget(Button.builder(playerSpeedLabel(), b -> {
+            playerSpeedAmplifier = (playerSpeedAmplifier + 1) % 10;
+            ClientSettings.setPlayerSpeedAmplifier(playerSpeedAmplifier);
+            b.setMessage(playerSpeedLabel());
+        }).bounds(centerX - 100, y, 200, 20).build());
+
+        y += 24;
+        // ボット速度設定ボタン
+        addRenderableWidget(Button.builder(botSpeedLabel(), b -> {
+            botSpeedAmplifier = (botSpeedAmplifier + 1) % 10;
+            ClientSettings.setBotSpeedAmplifier(botSpeedAmplifier);
+            b.setMessage(botSpeedLabel());
+        }).bounds(centerX - 100, y, 200, 20).build());
+
         y += 28;
         // ステータス確認ボタン
         addRenderableWidget(Button.builder(Component.translatable("pvpbot.screen.status"), b -> {
@@ -66,6 +97,7 @@ public class PvpBotSettingsScreen extends Screen {
             sendCommand("pvpbot armor enemy " + enemyArmorTier);
             sendCommand("pvpbot armor player " + playerArmorTier);
             sendCommand("pvpbot boxing " + boxingMode);
+            sendCommand("pvpbot strength " + strengthTier);
             sendCommand("pvpbot start");
             onClose();
         }).bounds(centerX - 100, y, 200, 20).build());
@@ -105,6 +137,46 @@ public class PvpBotSettingsScreen extends Screen {
             default -> "pvpbot.screen.boxing.off";
         };
         return Component.translatable("pvpbot.screen.boxing", Component.translatable(key));
+    }
+
+    private Component strengthLabel() {
+        String key = switch (strengthTier) {
+            case 0 -> "pvpbot.screen.strength.weak";
+            case 1 -> "pvpbot.screen.strength.easy";
+            case 3 -> "pvpbot.screen.strength.strong";
+            case 4 -> "pvpbot.screen.strength.nightmare";
+            default -> "pvpbot.screen.strength.normal";
+        };
+        return Component.translatable("pvpbot.screen.strength", Component.translatable(key));
+    }
+
+    private Component playerSpeedLabel() {
+        if (playerSpeedAmplifier == 0) {
+            return Component.translatable("pvpbot.screen.speed.none");
+        }
+        return Component.translatable("pvpbot.screen.speed", "Speed " + romanNumerals(playerSpeedAmplifier));
+    }
+
+    private Component botSpeedLabel() {
+        if (botSpeedAmplifier == 0) {
+            return Component.translatable("pvpbot.screen.speed.none");
+        }
+        return Component.translatable("pvpbot.screen.speed", "Speed " + romanNumerals(botSpeedAmplifier));
+    }
+
+    private String romanNumerals(int number) {
+        return switch (number) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            default -> String.valueOf(number);
+        };
     }
 
     private void sendCommand(String command) {

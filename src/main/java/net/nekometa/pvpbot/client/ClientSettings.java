@@ -34,4 +34,28 @@ public final class ClientSettings {
     public static void setBoxingMode(int mode) {
         Config.BOXING_MODE.set(Math.clamp(mode, 0, 4));
     }
+
+    public static int getStrengthTier() {
+        return Config.STRENGTH_TIER.getAsInt();
+    }
+
+    public static void setStrengthTier(int tier) {
+        Config.STRENGTH_TIER.set(Math.clamp(tier, 0, 4));
+    }
+
+    public static int getPlayerSpeedAmplifier() {
+        return Config.PLAYER_SPEED_AMPLIFIER.getAsInt();
+    }
+
+    public static void setPlayerSpeedAmplifier(int amplifier) {
+        Config.PLAYER_SPEED_AMPLIFIER.set(Math.clamp(amplifier, 0, 9));
+    }
+
+    public static int getBotSpeedAmplifier() {
+        return Config.BOT_SPEED_AMPLIFIER.getAsInt();
+    }
+
+    public static void setBotSpeedAmplifier(int amplifier) {
+        Config.BOT_SPEED_AMPLIFIER.set(Math.clamp(amplifier, 0, 9));
+    }
 }
